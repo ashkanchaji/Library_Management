@@ -4,6 +4,8 @@ import java.util.Scanner;
 public class LibraryManagement {
 
     static HashMap<String, Library> libraries = new HashMap<>();
+    static HashMap<String, Category> categories = new HashMap<>();
+
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
 
@@ -15,6 +17,13 @@ public class LibraryManagement {
             switch(commands[0]){
                 case "add-library" :
                     if (addLibrary(commands[1])){
+                        System.out.println("success");
+                    } else {
+                        System.out.println("duplicate-id");
+                    }
+                    break;
+                case "add-category" :
+                    if (addCategory(commands[1])){
                         System.out.println("success");
                     } else {
                         System.out.println("duplicate-id");
@@ -38,6 +47,20 @@ public class LibraryManagement {
             return false;
         } else {
             libraries.put(info[0], library);
+            return true;
+        }
+    }
+
+    private static boolean addCategory (String information){
+        // 0: id, 1: name
+        String[] info = information.split("|");
+
+        Category category = new Category(info[0], info[1]);
+
+        if (categories.containsKey(info[0])){
+            return false;
+        } else {
+            categories.put(info[0], category);
             return true;
         }
     }
