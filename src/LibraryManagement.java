@@ -5,7 +5,6 @@ public class LibraryManagement {
 
     public static HashMap<String, Library> libraries = new HashMap<>();
     public static HashMap<String, Category> categories = new HashMap<>();
-    public static HashMap<String, Book> books = new HashMap<>();
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
@@ -52,6 +51,18 @@ public class LibraryManagement {
                     } else {
                         System.out.println("not-found");
                     }
+                    break;
+                case "remove-book" :
+                    /* if ( book was borrowed )
+                        System.out.println("not-allowed");
+                        break;
+                     */
+                    if (removeBook(info)){
+                        System.out.println("success");
+                    } else {
+                        System.out.println("not-found");
+                    }
+                    break;
             }
         }
     }
@@ -84,16 +95,17 @@ public class LibraryManagement {
         // 0: id, 1: name, 2: author, 3: publisher, 4: printYear, 5: copyCount,
         // 6: category, 7: library
 
-        if (books.containsKey(info[0])){
+        Library library = libraries.get(info[7]);
+
+        if (library.books.containsKey(info[0])){
             return false;
         } else {
             Category category = categories.getOrDefault(info[6], null);
-            Library library = libraries.getOrDefault(info[7], null);
 
             Book book = new Book(info[0], info[1], info[2], info[3], info[4], info[5],
                     category, library);
 
-            books.put(info[0], book);
+            library.books.put(info[0], book);
             return true;
         }
     }
@@ -102,29 +114,45 @@ public class LibraryManagement {
         // 0: bookID, 1: libraryID, 2: name, 3: author, 4: publisher, 5: printYear,
         // 6: copyCount, 7: category
 
-        if (!books.containsKey(info[0]) || !libraries.containsKey(info[1])){
+        Library library = libraries.get(info[1]);
+
+        if (!libraries.containsKey(info[1]) || !library.books.containsKey(info[0])){
             return false;
         } else {
             if (!info[2].equals("-")){
-                books.get(info[0]).setName(info[2]);
+                library.books.get(info[0]).setName(info[2]);
             }
             if (!info[3].equals("-")){
-                books.get(info[0]).setAuthor(info[3]);
+                library.books.get(info[0]).setAuthor(info[3]);
             }
             if (!info[4].equals("-")){
-                books.get(info[0]).setPublisher(info[4]);
+                library.books.get(info[0]).setPublisher(info[4]);
             }
             if (!info[5].equals("-")){
-                books.get(info[0]).setPrintYear(info[5]);
+                library.books.get(info[0]).setPrintYear(info[5]);
             }
             if (!info[6].equals("-")){
-                books.get(info[0]).setCopyCount(info[6]);
+                library.books.get(info[0]).setCopyCount(info[6]);
             }
             if (!info[7].equals("-")){
                 Category category = categories.get(info[7]);
-                books.get(info[0]).setCategory(category);
+                library.books.get(info[0]).setCategory(category);
             }
             return true;
         }
     }
+
+    private static boolean removeBook(String[] info){
+        // 0: bookID, 1: libraryID
+
+        Library library = libraries.get(info[1]);
+
+        if (!libraries.containsKey(info[1]) || !library.books.containsKey(info[0])) {
+            return false;
+        } else {
+            library.books.remove(info[0]);
+            return true;
+        }
+    }
+
 }
