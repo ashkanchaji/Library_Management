@@ -65,8 +65,8 @@ public class Book {
         return copyCount;
     }
 
-    public void setCopyCount(Integer copyCount) {
-        this.copyCount = copyCount;
+    public void setCopyCount(String copyCount) {
+        this.copyCount = Integer.parseInt(copyCount);
     }
 
     public Category getCategory() {

@@ -37,28 +37,32 @@ public class LibraryManagement {
                     }
                     break;
                 case "add-book" :
-                    if (addBook(info)){
+                    // *** IS THIS WAY CORRECT IN TEST CASES ? ***
+                    if (!categories.containsKey(info[6]) || !libraries.containsKey(info[7])){
+                        System.out.println("not-found");
+                    } else if (addBook(info)){
                         System.out.println("success");
                     } else {
                         System.out.println("duplicate-id");
                     }
-
-                    // *** IS THIS WAY CORRECT IN TEST CASES ? ***
-                    if (!categories.containsKey(info[6]) || !libraries.containsKey(info[7])){
+                    break;
+                case "edit-book" :
+                    if (editBook(info)){
+                        System.out.println("success");
+                    } else {
                         System.out.println("not-found");
                     }
-                    break;
             }
         }
     }
 
     private static boolean addLibrary (String[] info){
         // 0: id, 1: name, 2: establishYear, 3: tableCount, 4: address
-        Library library = new Library(info[0], info[1], info[2], info[3], info[4]);
 
         if (libraries.containsKey(info[0])){
             return false;
         } else {
+            Library library = new Library(info[0], info[1], info[2], info[3], info[4]);
             libraries.put(info[0], library);
             return true;
         }
@@ -66,11 +70,11 @@ public class LibraryManagement {
 
     private static boolean addCategory (String[] info){
         // 0: id, 1: name
-        Category category = new Category(info[0], info[1]);
 
         if (categories.containsKey(info[0])){
             return false;
         } else {
+            Category category = new Category(info[0], info[1]);
             categories.put(info[0], category);
             return true;
         }
@@ -80,16 +84,46 @@ public class LibraryManagement {
         // 0: id, 1: name, 2: author, 3: publisher, 4: printYear, 5: copyCount,
         // 6: category, 7: library
 
-        Category category = categories.getOrDefault(info[6], null);
-        Library library = libraries.getOrDefault(info[7], null);
-
-        Book book = new Book(info[0], info[1], info[2], info[3], info[4], info[5],
-                category, library);
-
         if (books.containsKey(info[0])){
             return false;
         } else {
+            Category category = categories.getOrDefault(info[6], null);
+            Library library = libraries.getOrDefault(info[7], null);
+
+            Book book = new Book(info[0], info[1], info[2], info[3], info[4], info[5],
+                    category, library);
+
             books.put(info[0], book);
+            return true;
+        }
+    }
+
+    private static boolean editBook (String[] info){
+        // 0: bookID, 1: libraryID, 2: name, 3: author, 4: publisher, 5: printYear,
+        // 6: copyCount, 7: category
+
+        if (!books.containsKey(info[0]) || !libraries.containsKey(info[1])){
+            return false;
+        } else {
+            if (!info[2].equals("-")){
+                books.get(info[0]).setName(info[2]);
+            }
+            if (!info[3].equals("-")){
+                books.get(info[0]).setAuthor(info[3]);
+            }
+            if (!info[4].equals("-")){
+                books.get(info[0]).setPublisher(info[4]);
+            }
+            if (!info[5].equals("-")){
+                books.get(info[0]).setPrintYear(info[5]);
+            }
+            if (!info[6].equals("-")){
+                books.get(info[0]).setCopyCount(info[6]);
+            }
+            if (!info[7].equals("-")){
+                Category category = categories.get(info[7]);
+                books.get(info[0]).setCategory(category);
+            }
             return true;
         }
     }
