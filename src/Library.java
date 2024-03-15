@@ -7,6 +7,7 @@ public class Library {
     private final Integer tableCount;
     private final String address;
     public HashMap<String, Book> books = new HashMap<>();
+    public HashMap<String, Thesis> thesis = new HashMap<>();
 
     public Library(String id, String name, String establishYear,
                    String tableCount, String address) {

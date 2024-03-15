@@ -37,7 +37,8 @@ public class LibraryManagement {
                     break;
                 case "add-book" :
                     // *** IS THIS WAY CORRECT IN TEST CASES ? ***
-                    if (!categories.containsKey(info[6]) || !libraries.containsKey(info[7])){
+                    if ((!info[6].equals("null") && !categories.containsKey(info[6])) ||
+                            !libraries.containsKey(info[7])){
                         System.out.println("not-found");
                     } else if (addBook(info)){
                         System.out.println("success");
@@ -61,6 +62,17 @@ public class LibraryManagement {
                         System.out.println("success");
                     } else {
                         System.out.println("not-found");
+                    }
+                    break;
+                case "add-thesis" :
+                    // *** IS THIS WAY CORRECT IN TEST CASES ? ***
+                    if ((!info[5].equals("null") && !categories.containsKey(info[5])) ||
+                            !libraries.containsKey(info[6])){
+                        System.out.println("not-found");
+                    } else if (addThesis(info)){
+                        System.out.println("success");
+                    } else {
+                        System.out.println("duplicate-id");
                     }
                     break;
             }
@@ -155,4 +167,22 @@ public class LibraryManagement {
         }
     }
 
+    private static boolean addThesis (String[] info){
+        // 0: thesisID, 1: name, 2: studentName, 3: professorName, 4: defenceYear
+        // 5: category, 6: library
+
+        Library library = libraries.get(info[6]);
+
+        if (library.thesis.containsKey(info[0])){
+            return false;
+        } else {
+            Category category = categories.getOrDefault(info[5], null);
+
+            Thesis thesis = new Thesis(info[0], info[1], info[2], info[3], info[4],
+                    category, library);
+
+            library.thesis.put(info[0], thesis);
+            return true;
+        }
+    }
 }
