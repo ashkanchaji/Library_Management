@@ -75,6 +75,13 @@ public class LibraryManagement {
                         System.out.println("duplicate-id");
                     }
                     break;
+                case "edit-thesis" :
+                    if (editThesis(info)){
+                        System.out.println("success");
+                    } else {
+                        System.out.println("not-found");
+                    }
+                    break;
             }
         }
     }
@@ -147,7 +154,7 @@ public class LibraryManagement {
                 library.books.get(info[0]).setCopyCount(info[6]);
             }
             if (!info[7].equals("-")){
-                Category category = categories.get(info[7]);
+                Category category = categories.getOrDefault(info[7], null);
                 library.books.get(info[0]).setCategory(category);
             }
             return true;
@@ -182,6 +189,35 @@ public class LibraryManagement {
                     category, library);
 
             library.thesis.put(info[0], thesis);
+            return true;
+        }
+    }
+
+    private static boolean editThesis (String[] info){
+        // 0: thesisID, 1: libraryID, 2: name, 3: studentName, 4: professorName,
+        // 5: defenceYear, 6: category
+
+        Library library = libraries.get(info[1]);
+
+        if (!libraries.containsKey(info[1]) || !library.thesis.containsKey(info[0])){
+            return false;
+        } else {
+            if (!info[2].equals("-")){
+                library.thesis.get(info[0]).setName(info[2]);
+            }
+            if (!info[3].equals("-")){
+                library.thesis.get(info[0]).setStudentName(info[3]);
+            }
+            if (!info[4].equals("-")){
+                library.thesis.get(info[0]).setProfessorName(info[4]);
+            }
+            if (!info[5].equals("-")){
+                library.thesis.get(info[0]).setDefenceYear(info[5]);
+            }
+            if (!info[6].equals("-")){
+                Category category = categories.getOrDefault(info[6], null);
+                library.thesis.get(info[0]).setCategory(category);
+            }
             return true;
         }
     }
