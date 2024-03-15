@@ -82,6 +82,17 @@ public class LibraryManagement {
                         System.out.println("not-found");
                     }
                     break;
+                case "remove-thesis" :
+                    /* if ( thesis was borrowed )
+                        System.out.println("not-allowed");
+                        break;
+                     */
+                    if (removeThesis(info)){
+                        System.out.println("success");
+                    } else {
+                        System.out.println("not-found");
+                    }
+                    break;
             }
         }
     }
@@ -135,7 +146,9 @@ public class LibraryManagement {
 
         Library library = libraries.get(info[1]);
 
-        if (!libraries.containsKey(info[1]) || !library.books.containsKey(info[0])){
+        if ((!info[1].equals("-") && !libraries.containsKey(info[1])) ||
+                (!info[0].equals("-") && !library.books.containsKey(info[0])) ||
+                (!info[7].equals("-") && !categories.containsKey(info[7]))){
             return false;
         } else {
             if (!info[2].equals("-")){
@@ -199,7 +212,9 @@ public class LibraryManagement {
 
         Library library = libraries.get(info[1]);
 
-        if (!libraries.containsKey(info[1]) || !library.thesis.containsKey(info[0])){
+        if ((!info[1].equals("-") && !libraries.containsKey(info[1])) ||
+                (!info[0].equals("-") && !library.thesis.containsKey(info[0])) ||
+                (!info[6].equals("-") && !categories.containsKey(info[6]))){
             return false;
         } else {
             if (!info[2].equals("-")){
@@ -218,6 +233,19 @@ public class LibraryManagement {
                 Category category = categories.getOrDefault(info[6], null);
                 library.thesis.get(info[0]).setCategory(category);
             }
+            return true;
+        }
+    }
+
+    private static boolean removeThesis (String[] info){
+        // 0: thesisId, 1: libraryId
+
+        Library library = libraries.get(info[1]);
+
+        if (!libraries.containsKey(info[1]) || !library.thesis.containsKey(info[0])) {
+            return false;
+        } else {
+            library.thesis.remove(info[0]);
             return true;
         }
     }
