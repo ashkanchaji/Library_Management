@@ -132,6 +132,13 @@ public class LibraryManagement {
                     System.out.println("duplicate-id");
                 }
                 break;
+            case "edit-staff" :
+                if (editStaff(info)){
+                    System.out.println("success");
+                } else {
+                    System.out.println("not-found");
+                }
+                break;
         }
     }
 
@@ -342,6 +349,27 @@ public class LibraryManagement {
         } else {
             Staff newStaff = new Staff(info);
             staff.put(info[0], newStaff);
+            return true;
+        }
+    }
+
+    private static boolean editStaff (String [] info){
+        // 0: id, 1: password, 2: firstName, 3: lastName, 4: nationalID,
+        // 5: birthYear, 6: address
+
+        if (!staff.containsKey(info[0])){
+            return false;
+        } else {
+            Staff thisStaff = staff.get(info[0]);
+
+            thisStaff.setPassword(info[1]);
+            thisStaff.setFirstName(info[2]);
+            thisStaff.setLastName(info[3]);
+            thisStaff.setNationalID(info[4]);
+            thisStaff.setBirthYear(info[5]);
+            thisStaff.setAddress(info[6]);
+
+            staff.replace(info[0], thisStaff);
             return true;
         }
     }
