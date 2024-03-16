@@ -1,3 +1,5 @@
+import java.util.HashSet;
+
 public class Student {
     private final String id;
     private String password;
@@ -6,6 +8,7 @@ public class Student {
     private String nationalId;
     private String birthYear;
     private String address;
+    private HashSet<Borrow> borrowedBooks;
 
     public Student(String[] info) {
         // 0: id, 1: password, 2: firstName, 3: lastName, 4: nationalID,
@@ -18,6 +21,7 @@ public class Student {
         this.nationalId = info[4];
         this.birthYear = info[5];
         this.address = info[6];
+        borrowedBooks = new HashSet<>();
     }
 
     public String getId() {
@@ -82,5 +86,13 @@ public class Student {
         if (!address.equals("-")){
             this.address = address;
         }
+    }
+
+    public HashSet<Borrow> getBorrowedBooks() {
+        return borrowedBooks;
+    }
+
+    public void setBorrowedBooks(HashSet<Borrow> borrowedBooks) {
+        this.borrowedBooks = borrowedBooks;
     }
 }

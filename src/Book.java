@@ -5,8 +5,10 @@ public class Book {
     private String publisher;
     private String printYear;
     private Integer copyCount;
+    private Integer copyCountNow;
     private Category category;
     private Library library;
+    private boolean borrowed;
 
     public Book(String id, String name, String author, String publisher,
                 String printYear, String copyCount, Category category,
@@ -17,6 +19,7 @@ public class Book {
         this.publisher = publisher;
         this.printYear = printYear;
         this.copyCount = Integer.parseInt(copyCount);
+        copyCountNow = Integer.parseInt(copyCount);
         this.category = category;
         this.library = library;
     }
@@ -66,7 +69,18 @@ public class Book {
     }
 
     public void setCopyCount(String copyCount) {
+        int diff = Integer.parseInt(copyCount) - this.copyCount;
+        copyCountNow += diff;
+        if (copyCountNow < 0){copyCountNow = 0;}
         this.copyCount = Integer.parseInt(copyCount);
+    }
+
+    public Integer getCopyCountNow() {
+        return copyCountNow;
+    }
+
+    public void setCopyCountNow(int copyCountNow) {
+        this.copyCountNow = copyCountNow;
     }
 
     public Category getCategory() {
@@ -83,5 +97,13 @@ public class Book {
 
     public void setLibrary(Library library) {
         this.library = library;
+    }
+
+    public boolean isBorrowed() {
+        return borrowed;
+    }
+
+    public void setBorrowed(boolean borrowed) {
+        this.borrowed = borrowed;
     }
 }

@@ -6,6 +6,7 @@ public class Thesis {
     private String defenceYear;
     private Category category;
     private Library library;
+    private boolean borrowed;
 
     public Thesis(String id, String name, String studentName, String professorName,
                   String defenceYear, Category category, Library library) {
@@ -72,5 +73,13 @@ public class Thesis {
 
     public void setLibrary(Library library) {
         this.library = library;
+    }
+
+    public boolean isBorrowed() {
+        return borrowed;
+    }
+
+    public void setBorrowed(boolean borrowed) {
+        this.borrowed = borrowed;
     }
 }

@@ -6,8 +6,8 @@ public class Library {
     private final String establishYear;
     private final Integer tableCount;
     private final String address;
-    public HashMap<String, Book> books = new HashMap<>();
-    public HashMap<String, Thesis> thesis = new HashMap<>();
+    public HashMap<String, Book> books;
+    public HashMap<String, Thesis> thesis;
 
     public Library(String id, String name, String establishYear,
                    String tableCount, String address) {
@@ -16,5 +16,7 @@ public class Library {
         this.establishYear = establishYear;
         this.tableCount = Integer.parseInt(tableCount);
         this.address = address;
+        books = new HashMap<>();
+        thesis = new HashMap<>();
     }
 }

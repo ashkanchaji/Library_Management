@@ -1,4 +1,5 @@
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Scanner;
 
 public class LibraryManagement {
@@ -60,11 +61,11 @@ public class LibraryManagement {
                     System.out.println("not-found");
                 }
                 break;
-            case "remove-book" :
-                    /* if ( book was borrowed )
-                        System.out.println("not-allowed");
-                        break;
-                     */
+            case "remove-book" : // is order OK?
+                if (libraries.get(info[1]).books.get(info[0]).isBorrowed()){
+                    System.out.println("not-allowed");
+                    break;
+                }
                 if (removeBook(info)){
                     System.out.println("success");
                 } else {
@@ -89,11 +90,11 @@ public class LibraryManagement {
                     System.out.println("not-found");
                 }
                 break;
-            case "remove-thesis" :
-                    /* if ( thesis was borrowed )
-                        System.out.println("not-allowed");
-                        break;
-                     */
+            case "remove-thesis" : // is the order OK?
+                if (libraries.get(info[1]).thesis.get(info[0]).isBorrowed()){
+                    System.out.println("not-allowed");
+                    break;
+                }
                 if (removeThesis(info)){
                     System.out.println("success");
                 } else {
@@ -114,11 +115,11 @@ public class LibraryManagement {
                     System.out.println("not-found");
                 }
                 break;
-            case "remove-student" :
-                /* if ( check student is not OK){
+            case "remove-student" : // is order OK?
+                if (!students.get(info[0]).getBorrowedBooks().isEmpty()){
                     System.out.println("not-allowed");
+                    break;
                 }
-                break;*/
                 if (removeStudent(info)){
                     System.out.println("success");
                 } else {
@@ -139,16 +140,19 @@ public class LibraryManagement {
                     System.out.println("not-found");
                 }
                 break;
-            case "remove-staff" :
-                /* if ( check staff is not OK){
+            case "remove-staff" : // is order OK?
+                if (!staff.get(info[0]).getBorrowedBooks().isEmpty()){
                     System.out.println("not-allowed");
+                    break;
                 }
-                break;*/
                 if (removeStaff(info)){
                     System.out.println("success");
                 } else {
                     System.out.println("not-found");
                 }
+                break;
+            case "borrow" :
+                borrow(info);
                 break;
         }
     }
@@ -394,5 +398,90 @@ public class LibraryManagement {
             staff.remove(info[0]);
             return true;
         }
+    }
+
+    private static void borrow (String[] info){ // sorry for the complex code but couldn't change it mid way
+        // 0: personId, 1: password, 2: libraryID, 3: book/thesis ID
+        // 4: date, 5: time
+
+        // check if IDs are correct
+        if ((!students.containsKey(info[0]) && !staff.containsKey(info[0])) ||
+            !libraries.containsKey(info[2])){
+            System.out.println("not-found");
+            return;
+        }
+
+        Library library = libraries.get(info[2]);
+        String writingType;
+        if (!library.books.containsKey(info[3]) && !library.thesis.containsKey(info[3])){
+            System.out.println("not-found");
+            return;
+        } else {
+            writingType = library.books.containsKey(info[3]) ? "book" : "thesis";
+        }
+
+        // check if password is correct
+        String password;
+        String personType = students.containsKey(info[0]) ? "student" : "staff";
+        if (personType.equals("student")){
+            password = students.get(info[0]).getPassword();
+        } else {
+            password = staff.get(info[0]).getPassword();
+        }
+        if (!password.equals(info[1])){
+            System.out.println("invalid-pass");
+            return;
+        }
+
+        // check if borrowing is allowed
+        if (writingType.equals("book")){
+            if (library.books.get(info[3]).getCopyCountNow() == 0){
+                System.out.println("not-allowed");
+                return;
+            }
+        } else {
+            if (library.thesis.get(info[3]).isBorrowed()){
+                System.out.println("not-allowed");
+                return;
+            }
+        }
+
+        if (personType.equals("student")){
+            if (students.get(info[0]).getBorrowedBooks().size() == 3){
+                System.out.println("not-allowed");
+                return;
+            }
+        } else {
+            if (staff.get(info[0]).getBorrowedBooks().size() == 3){
+                System.out.println("not-allowed");
+                return;
+            }
+        }
+
+        // borrow the book
+        Borrow borrowedBook = new Borrow(info[2], info[3], info[4], info[5]);
+
+        if (personType.equals("student")){
+            HashSet<Borrow> borrowedBooks = students.get(info[0]).getBorrowedBooks();
+            borrowedBooks.add(borrowedBook);
+            students.get(info[0]).setBorrowedBooks(borrowedBooks);
+        } else {
+            HashSet<Borrow> borrowedBooks = staff.get(info[0]).getBorrowedBooks();
+            borrowedBooks.add(borrowedBook);
+            staff.get(info[0]).setBorrowedBooks(borrowedBooks);
+        }
+
+        if (writingType.equals("book")){
+            int newCopyCount = library.books.get(info[3]).getCopyCountNow() - 1;
+            library.books.get(info[3]).setCopyCountNow(newCopyCount);
+
+            if (!library.books.get(info[3]).isBorrowed()){
+                library.books.get(info[3]).setBorrowed(true);
+            }
+        } else {
+            library.thesis.get(info[3]).setBorrowed(true);
+        }
+
+        System.out.println("success");
     }
 }
