@@ -115,7 +115,7 @@ public class LibraryManagement {
                 }
                 break;
             case "remove-student" :
-                /* if ( check if student is not OK){
+                /* if ( check student is not OK){
                     System.out.println("not-allowed");
                 }
                 break;*/
@@ -134,6 +134,17 @@ public class LibraryManagement {
                 break;
             case "edit-staff" :
                 if (editStaff(info)){
+                    System.out.println("success");
+                } else {
+                    System.out.println("not-found");
+                }
+                break;
+            case "remove-staff" :
+                /* if ( check staff is not OK){
+                    System.out.println("not-allowed");
+                }
+                break;*/
+                if (removeStaff(info)){
                     System.out.println("success");
                 } else {
                     System.out.println("not-found");
@@ -370,6 +381,17 @@ public class LibraryManagement {
             thisStaff.setAddress(info[6]);
 
             staff.replace(info[0], thisStaff);
+            return true;
+        }
+    }
+
+    private static boolean removeStaff (String[] info){
+        // 0: id
+
+        if (!staff.containsKey(info[0])){
+            return false;
+        } else {
+            staff.remove(info[0]);
             return true;
         }
     }
