@@ -5,95 +5,107 @@ public class LibraryManagement {
 
     public static HashMap<String, Library> libraries = new HashMap<>();
     public static HashMap<String, Category> categories = new HashMap<>();
+    public static HashMap<String, Student> students = new HashMap<>();
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
 
-        while (true){
+        while (scanner.hasNextLine()) {
             String input = scanner.nextLine();
 
-            if (input.equals("finish")){
+            if (input.equals("finish")) {
                 break;
             }
 
-            String[] commands = input.split("#");
+            processInput(input);
+        }
+    }
 
-            String[] info = commands[1].split("\\|");
+    private static void processInput(String input) {
+        String[] commands = input.split("#");
 
-            switch(commands[0]){
-                case "add-library" :
-                    if (addLibrary(info)){
-                        System.out.println("success");
-                    } else {
-                        System.out.println("duplicate-id");
-                    }
-                    break;
-                case "add-category" :
-                    if (addCategory(info)){
-                        System.out.println("success");
-                    } else {
-                        System.out.println("duplicate-id");
-                    }
-                    break;
-                case "add-book" :
-                    // *** IS THIS WAY CORRECT IN TEST CASES ? ***
-                    if ((!info[6].equals("null") && !categories.containsKey(info[6])) ||
-                            !libraries.containsKey(info[7])){
-                        System.out.println("not-found");
-                    } else if (addBook(info)){
-                        System.out.println("success");
-                    } else {
-                        System.out.println("duplicate-id");
-                    }
-                    break;
-                case "edit-book" :
-                    if (editBook(info)){
-                        System.out.println("success");
-                    } else {
-                        System.out.println("not-found");
-                    }
-                    break;
-                case "remove-book" :
+        String[] info = commands[1].split("\\|");
+
+        switch(commands[0]){
+            case "add-library" :
+                if (addLibrary(info)){
+                    System.out.println("success");
+                } else {
+                    System.out.println("duplicate-id");
+                }
+                break;
+            case "add-category" :
+                if (addCategory(info)){
+                    System.out.println("success");
+                } else {
+                    System.out.println("duplicate-id");
+                }
+                break;
+            case "add-book" :
+                // *** IS THIS WAY CORRECT IN TEST CASES ? ***
+                if ((!info[6].equals("null") && !categories.containsKey(info[6])) ||
+                        !libraries.containsKey(info[7])){
+                    System.out.println("not-found");
+                } else if (addBook(info)){
+                    System.out.println("success");
+                } else {
+                    System.out.println("duplicate-id");
+                }
+                break;
+            case "edit-book" :
+                if (editBook(info)){
+                    System.out.println("success");
+                } else {
+                    System.out.println("not-found");
+                }
+                break;
+            case "remove-book" :
                     /* if ( book was borrowed )
                         System.out.println("not-allowed");
                         break;
                      */
-                    if (removeBook(info)){
-                        System.out.println("success");
-                    } else {
-                        System.out.println("not-found");
-                    }
-                    break;
-                case "add-thesis" :
-                    // *** IS THIS WAY CORRECT IN TEST CASES ? ***
-                    if ((!info[5].equals("null") && !categories.containsKey(info[5])) ||
-                            !libraries.containsKey(info[6])){
-                        System.out.println("not-found");
-                    } else if (addThesis(info)){
-                        System.out.println("success");
-                    } else {
-                        System.out.println("duplicate-id");
-                    }
-                    break;
-                case "edit-thesis" :
-                    if (editThesis(info)){
-                        System.out.println("success");
-                    } else {
-                        System.out.println("not-found");
-                    }
-                    break;
-                case "remove-thesis" :
+                if (removeBook(info)){
+                    System.out.println("success");
+                } else {
+                    System.out.println("not-found");
+                }
+                break;
+            case "add-thesis" :
+                // *** IS THIS WAY CORRECT IN TEST CASES ? ***
+                if ((!info[5].equals("null") && !categories.containsKey(info[5])) ||
+                        !libraries.containsKey(info[6])){
+                    System.out.println("not-found");
+                } else if (addThesis(info)){
+                    System.out.println("success");
+                } else {
+                    System.out.println("duplicate-id");
+                }
+                break;
+            case "edit-thesis" :
+                if (editThesis(info)){
+                    System.out.println("success");
+                } else {
+                    System.out.println("not-found");
+                }
+                break;
+            case "remove-thesis" :
                     /* if ( thesis was borrowed )
                         System.out.println("not-allowed");
                         break;
                      */
-                    if (removeThesis(info)){
-                        System.out.println("success");
-                    } else {
-                        System.out.println("not-found");
-                    }
-                    break;
-            }
+                if (removeThesis(info)){
+                    System.out.println("success");
+                } else {
+                    System.out.println("not-found");
+                }
+                break;
+            case "add-student" :
+                if (addStudent(info)) {
+                    System.out.println("success");
+                } else {
+                    System.out.println("duplicate-id");
+                }
+                break;
         }
     }
 
@@ -246,6 +258,19 @@ public class LibraryManagement {
             return false;
         } else {
             library.thesis.remove(info[0]);
+            return true;
+        }
+    }
+
+    private static boolean addStudent(String[] info){
+        // 0: id, 1: password, 2: firstName, 3: lastName, 4: nationalID,
+        // 5: birthYear, 6: address
+
+        if (students.containsKey(info[0])){
+            return false;
+        } else {
+            Student student = new Student(info);
+            students.put(info[0], student);
             return true;
         }
     }
