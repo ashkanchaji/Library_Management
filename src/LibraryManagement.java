@@ -113,6 +113,17 @@ public class LibraryManagement {
                     System.out.println("not-found");
                 }
                 break;
+            case "remove-student" :
+                /* if ( check if student is not OK){
+                    System.out.println("not-allowed");
+                }
+                break;*/
+                if (removeStudent(info)){
+                    System.out.println("success");
+                } else {
+                    System.out.println("not-found");
+                }
+                break;
         }
     }
 
@@ -299,6 +310,17 @@ public class LibraryManagement {
             student.setAddress(info[6]);
 
             students.replace(info[0], student);
+            return true;
+        }
+    }
+
+    private static boolean removeStudent (String[] info){
+        // 0: id
+
+        if (!students.containsKey(info[0])){
+            return false;
+        } else {
+            students.remove(info[0]);
             return true;
         }
     }
