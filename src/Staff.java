@@ -1,13 +1,13 @@
-public class Student {
+public class Staff {
     private final String id;
     private String password;
     private String firstName;
     private String lastName;
-    private String nationalId;
+    private String nationalID;
     private String birthYear;
     private String address;
 
-    public Student(String[] info) {
+    public Staff(String[] info) {
         // 0: id, 1: password, 2: firstName, 3: lastName, 4: nationalID,
         // 5: birthYear, 6: address
 
@@ -15,7 +15,7 @@ public class Student {
         this.password = info[1];
         this.firstName = info[2];
         this.lastName = info[3];
-        this.nationalId = info[4];
+        this.nationalID = info[4];
         this.birthYear = info[5];
         this.address = info[6];
     }
@@ -54,13 +54,13 @@ public class Student {
         }
     }
 
-    public String getNationalId() {
-        return nationalId;
+    public String getNationalID() {
+        return nationalID;
     }
 
-    public void setNationalId(String nationalId) {
-        if (!nationalId.equals("-")){
-            this.nationalId = nationalId;
+    public void setNationalID(String nationalID) {
+        if (!nationalID.equals("-")){
+            this.nationalID = nationalID;
         }
     }
 

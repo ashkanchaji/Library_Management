@@ -6,6 +6,7 @@ public class LibraryManagement {
     public static HashMap<String, Library> libraries = new HashMap<>();
     public static HashMap<String, Category> categories = new HashMap<>();
     public static HashMap<String, Student> students = new HashMap<>();
+    public static HashMap<String, Staff> staff = new HashMap<>();
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
@@ -122,6 +123,13 @@ public class LibraryManagement {
                     System.out.println("success");
                 } else {
                     System.out.println("not-found");
+                }
+                break;
+            case "add-staff" :
+                if (addStaff(info)) {
+                    System.out.println("success");
+                } else {
+                    System.out.println("duplicate-id");
                 }
                 break;
         }
@@ -321,6 +329,19 @@ public class LibraryManagement {
             return false;
         } else {
             students.remove(info[0]);
+            return true;
+        }
+    }
+
+    private static boolean addStaff (String[] info){
+        // 0: id, 1: password, 2: firstName, 3: lastName, 4: nationalID,
+        // 5: birthYear, 6: address
+
+        if (staff.containsKey(info[0])){
+            return false;
+        } else {
+            Staff newStaff = new Staff(info);
+            staff.put(info[0], newStaff);
             return true;
         }
     }
