@@ -19,4 +19,74 @@ public class Student {
         this.birthYear = info[5];
         this.address = info[6];
     }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        if (!id.equals("-")){
+            this.id = id;
+        }
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        if (!password.equals("-")){
+            this.password = password;
+        }
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        if (!firstName.equals("-")){
+            this.firstName = firstName;
+        }
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        if (!lastName.equals("-")){
+            this.lastName = lastName;
+        }
+    }
+
+    public String getNationalId() {
+        return nationalId;
+    }
+
+    public void setNationalId(String nationalId) {
+        if (!nationalId.equals("-")){
+            this.nationalId = nationalId;
+        }
+    }
+
+    public String getBirthYear() {
+        return birthYear;
+    }
+
+    public void setBirthYear(String birthYear) {
+        if (!birthYear.equals("-")){
+            this.birthYear = birthYear;
+        }
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        if (!address.equals("-")){
+            this.address = address;
+        }
+    }
 }
