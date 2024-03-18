@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 
 public class Staff {
@@ -8,7 +10,7 @@ public class Staff {
     private String nationalID;
     private String birthYear;
     private String address;
-    private HashSet<Borrow> borrowedBooks;
+    private ArrayList<Borrow> borrowedBooks;
 
     public Staff(String[] info) {
         // 0: id, 1: password, 2: firstName, 3: lastName, 4: nationalID,
@@ -21,7 +23,7 @@ public class Staff {
         this.nationalID = info[4];
         this.birthYear = info[5];
         this.address = info[6];
-        borrowedBooks = new HashSet<>();
+        borrowedBooks = new ArrayList<>();
     }
 
     public String getId() {
@@ -88,11 +90,11 @@ public class Staff {
         }
     }
 
-    public HashSet<Borrow> getBorrowedBooks() {
+    public ArrayList<Borrow> getBorrowedBooks() {
         return borrowedBooks;
     }
 
-    public void setBorrowedBooks(HashSet<Borrow> borrowedBooks) {
+    public void setBorrowedBooks(ArrayList<Borrow> borrowedBooks) {
         this.borrowedBooks = borrowedBooks;
     }
 }

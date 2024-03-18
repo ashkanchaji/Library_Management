@@ -1,6 +1,6 @@
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Scanner;
+import java.time.LocalDateTime;
+import java.time.Duration;
+import java.util.*;
 
 public class LibraryManagement {
 
@@ -153,6 +153,9 @@ public class LibraryManagement {
                 break;
             case "borrow" :
                 borrow(info);
+                break;
+            case "return" :
+                returnSource(info);
                 break;
         }
     }
@@ -452,7 +455,7 @@ public class LibraryManagement {
                 return;
             }
         } else {
-            if (staff.get(info[0]).getBorrowedBooks().size() == 3){
+            if (staff.get(info[0]).getBorrowedBooks().size() == 5){
                 System.out.println("not-allowed");
                 return;
             }
@@ -462,11 +465,11 @@ public class LibraryManagement {
         Borrow borrowedBook = new Borrow(info[2], info[3], info[4], info[5]);
 
         if (personType.equals("student")){
-            HashSet<Borrow> borrowedBooks = students.get(info[0]).getBorrowedBooks();
+            ArrayList<Borrow> borrowedBooks = students.get(info[0]).getBorrowedBooks();
             borrowedBooks.add(borrowedBook);
             students.get(info[0]).setBorrowedBooks(borrowedBooks);
         } else {
-            HashSet<Borrow> borrowedBooks = staff.get(info[0]).getBorrowedBooks();
+            ArrayList<Borrow> borrowedBooks = staff.get(info[0]).getBorrowedBooks();
             borrowedBooks.add(borrowedBook);
             staff.get(info[0]).setBorrowedBooks(borrowedBooks);
         }
@@ -483,5 +486,135 @@ public class LibraryManagement {
         }
 
         System.out.println("success");
+    }
+
+    private static void returnSource (String[] info){
+        // 0: personId, 1: password, 2: libraryID, 3: book/thesis ID
+        // 4: date, 5: time
+
+        Library library = libraries.getOrDefault(info[2], null);
+        Student student = students.getOrDefault(info[0], null);
+        Staff staff1 = staff.getOrDefault(info[0], null);
+        Book book = library.books.getOrDefault(info[3], null);
+        Thesis thesis = library.thesis.getOrDefault(info[3], null);
+
+        // check if IDs are correct
+        if (library == null || (student == null && staff1 == null) ||
+                (book == null && thesis == null)){
+            System.out.println("not-found");
+            return;
+        }
+
+        // check if person has borrowed the source
+        Borrow borrowedSource = null;
+        Iterator<Borrow> it;
+
+        if (student != null){
+            it = student.getBorrowedBooks().iterator();
+        } else {
+            it = staff1.getBorrowedBooks().iterator();
+        }
+
+        while (it.hasNext()){
+            Borrow borrow = it.next();
+            if (borrow.getWritingID().equals(info[3]) &&
+                    borrow.getLibraryID().equals(info[2])){
+                borrowedSource = borrow;
+            }
+        }
+
+        if (borrowedSource == null){
+            System.out.println("not-found");
+            return;
+        }
+
+        // check if person's password is correct
+        if (student != null){
+            if (!student.getPassword().equals(info[1])){
+                System.out.println("invalid-pass");
+                return;
+            }
+        } else {
+            if (!staff1.getPassword().equals(info[1])){
+                System.out.println("invalid-pass");
+                return;
+            }
+        }
+
+        // check if person should be penalized
+        String[] borrowDateInfo = borrowedSource.getDate().split("-");
+        String[] borrowTimeInfo = borrowedSource.getTime().split(":");
+
+        String[] returnDateInfo = info[4].split("-");
+        String[] returnTimeInfo = info[5].split(":");
+
+        LocalDateTime borrowDate = LocalDateTime.of(Integer.parseInt(borrowDateInfo[0]),
+                                            Integer.parseInt(borrowDateInfo[1]),
+                                            Integer.parseInt(borrowDateInfo[2]),
+                                            Integer.parseInt(borrowTimeInfo[0]),
+                                            Integer.parseInt(borrowTimeInfo[1]));
+        LocalDateTime returnDate = LocalDateTime.of(Integer.parseInt(returnDateInfo[0]),
+                                            Integer.parseInt(returnDateInfo[1]),
+                                            Integer.parseInt(returnDateInfo[2]),
+                                            Integer.parseInt(returnTimeInfo[0]),
+                                            Integer.parseInt(returnTimeInfo[1]));
+        Duration duration = Duration.between(borrowDate, returnDate);
+
+        long hoursDifference = duration.toHours();
+
+        String personType = student != null ? "student" : "staff";
+        String sourceType = book != null ? "book" : "thesis";
+
+        if (calculatePenalty(personType, sourceType, hoursDifference)){
+            return;
+        }
+
+        ArrayList<Borrow> borrowedSources = student != null ? student.getBorrowedBooks() : staff1.getBorrowedBooks();
+
+        it = borrowedSources.iterator();
+
+        while (it.hasNext()){
+            Borrow borrow = it.next();
+            if (borrow.getWritingID().equals(info[3]) &&
+                    borrow.getLibraryID().equals(info[2])){
+                it.remove();
+
+                if (book != null){
+                    int copyCount = libraries.get(info[2]).books.get(info[3]).getCopyCount();
+                    int copyCountNow = libraries.get(info[2]).books.get(info[3]).getCopyCountNow();
+
+                    int newCopyCount = copyCountNow + 1;
+                    libraries.get(info[2]).books.get(info[3]).setCopyCountNow(newCopyCount);
+
+                    if (copyCountNow == copyCount){
+                        libraries.get(info[2]).books.get(info[3]).setBorrowed(false);
+                    }
+                } else {
+                    libraries.get(info[2]).thesis.get(info[3]).setBorrowed(false);
+                }
+            }
+        }
+
+        System.out.println("success");
+    }
+
+    private static boolean calculatePenalty (String personType, String sourceType, long hoursDifference){
+        long penaltyPerHour;
+        long maxPenaltyTime;
+
+        if (personType.equals("student")){
+            penaltyPerHour = 50;
+            maxPenaltyTime = sourceType.equals("book") ? 240 : 168;
+        } else {
+            penaltyPerHour = 100;
+            maxPenaltyTime = sourceType.equals("book") ? 336 : 240;
+        }
+
+        if (hoursDifference > maxPenaltyTime){
+            System.out.println((hoursDifference - maxPenaltyTime) * penaltyPerHour);
+            return true;
+        } else {
+            return false;
+        }
     }
 }
