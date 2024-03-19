@@ -133,6 +133,9 @@ public class LibraryManagement {
             case "category-report" :
                 categoryReport(info);
                 break;
+            case "report-penalties-sum" :
+                reportPenaltiesSum();
+                break;
         }
     }
 
@@ -800,5 +803,22 @@ public class LibraryManagement {
         }
 
         System.out.println(bookCount + " " + thesisCount);
+    }
+
+    private static void reportPenaltiesSum () {
+        // no info input
+
+        long[] totalPenalties = {0};
+
+        students.forEach((key, student) -> {
+            totalPenalties[0] += student.getPenalty();
+        });
+        staff.forEach((key, staff) -> {
+            totalPenalties[0] += staff.getPenalty();
+        });
+
+        long finalTotalPenalties = totalPenalties[0];
+
+        System.out.println(finalTotalPenalties);
     }
 }
