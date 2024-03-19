@@ -14,9 +14,9 @@ public class Book {
                 String printYear, String copyCount, Category category,
                 Library library) {
         this.id = id;
-        this.name = name;
-        this.author = author;
-        this.publisher = publisher;
+        this.name = name.toLowerCase();
+        this.author = author.toLowerCase();
+        this.publisher = publisher.toLowerCase();
         this.printYear = printYear;
         this.copyCount = Integer.parseInt(copyCount);
         copyCountNow = Integer.parseInt(copyCount);
@@ -37,7 +37,7 @@ public class Book {
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.name = name.toLowerCase();
     }
 
     public String getAuthor() {
@@ -45,7 +45,7 @@ public class Book {
     }
 
     public void setAuthor(String author) {
-        this.author = author;
+        this.author = author.toLowerCase();
     }
 
     public String getPublisher() {
@@ -53,7 +53,7 @@ public class Book {
     }
 
     public void setPublisher(String publisher) {
-        this.publisher = publisher;
+        this.publisher = publisher.toLowerCase();
     }
 
     public String getPrintYear() {

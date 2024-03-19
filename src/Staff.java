@@ -17,8 +17,8 @@ public class Staff {
 
         this.id = info[0];
         this.password = info[1];
-        this.firstName = info[2];
-        this.lastName = info[3];
+        this.firstName = info[2].toLowerCase();
+        this.lastName = info[3].toLowerCase();
         this.nationalID = info[4];
         this.birthYear = info[5];
         this.address = info[6];
@@ -46,7 +46,7 @@ public class Staff {
 
     public void setFirstName(String firstName) {
         if (!firstName.equals("-")){
-            this.firstName = firstName;
+            this.firstName = firstName.toLowerCase();
         }
     }
 
@@ -56,7 +56,7 @@ public class Staff {
 
     public void setLastName(String lastName) {
         if (!lastName.equals("-")){
-            this.lastName = lastName;
+            this.lastName = lastName.toLowerCase();
         }
     }
 

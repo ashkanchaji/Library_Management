@@ -11,9 +11,9 @@ public class Thesis {
     public Thesis(String id, String name, String studentName, String professorName,
                   String defenceYear, Category category, Library library) {
         this.id = id;
-        this.name = name;
-        this.studentName = studentName;
-        this.professorName = professorName;
+        this.name = name.toLowerCase();
+        this.studentName = studentName.toLowerCase();
+        this.professorName = professorName.toLowerCase();
         this.defenceYear = defenceYear;
         this.category = category;
         this.library = library;
@@ -32,7 +32,7 @@ public class Thesis {
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.name = name.toLowerCase();
     }
 
     public String getStudentName() {
@@ -40,7 +40,7 @@ public class Thesis {
     }
 
     public void setStudentName(String studentName) {
-        this.studentName = studentName;
+        this.studentName = studentName.toLowerCase();
     }
 
     public String getProfessorName() {
@@ -48,7 +48,7 @@ public class Thesis {
     }
 
     public void setProfessorName(String professorName) {
-        this.professorName = professorName;
+        this.professorName = professorName.toLowerCase();
     }
 
     public String getDefenceYear() {

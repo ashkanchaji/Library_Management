@@ -5,7 +5,8 @@ import java.util.*;
 public class LibraryManagement {
 
     public static HashMap<String, Library> libraries = new HashMap<>();
-    public static HashMap<String, Category> categories = new HashMap<>();
+    public static HashMap<String, Category> categories = new HashMap<>()
+    {{put("null", new Category("null", "null"));}};
     public static HashMap<String, Student> students = new HashMap<>();
     public static HashMap<String, Staff> staff = new HashMap<>();
     public static HashMap<String, Book> books = new HashMap<>();
@@ -46,9 +47,7 @@ public class LibraryManagement {
                 }
                 break;
             case "add-book" :
-                // *** IS THIS WAY CORRECT IN TEST CASES ? ***
-                if ((!info[6].equals("null") && !categories.containsKey(info[6])) ||
-                        !libraries.containsKey(info[7])){
+                if (!categories.containsKey(info[6]) || !libraries.containsKey(info[7])){
                     System.out.println("not-found");
                 } else if (addBook(info)){
                     System.out.println("success");
@@ -67,9 +66,7 @@ public class LibraryManagement {
                 removeBook(info);
                 break;
             case "add-thesis" :
-                // *** IS THIS WAY CORRECT IN TEST CASES ? ***
-                if ((!info[5].equals("null") && !categories.containsKey(info[5])) ||
-                        !libraries.containsKey(info[6])){
+                if (!categories.containsKey(info[5]) || !libraries.containsKey(info[6])){
                     System.out.println("not-found");
                 } else if (addThesis(info)){
                     System.out.println("success");
@@ -166,10 +163,14 @@ public class LibraryManagement {
         if (library.books.containsKey(info[0])){
             return false;
         } else {
-            Category category = categories.getOrDefault(info[6], null);
+            Category category = categories.get(info[6]);
 
             Book book = new Book(info[0], info[1], info[2], info[3], info[4], info[5],
                     category, library);
+
+            HashSet<String> categoryBooks = categories.get(info[6]).getBooks();
+            categoryBooks.add(info[0]);
+            categories.get(info[6]).setBooks(categoryBooks);
 
             library.books.put(info[0], book);
             if (!books.containsKey(info[0])){
@@ -206,8 +207,17 @@ public class LibraryManagement {
                 library.books.get(info[0]).setCopyCount(info[6]);
             }
             if (!info[7].equals("-")){
-                Category category = categories.getOrDefault(info[7], null);
+                String oldCategory = library.books.get(info[0]).getCategory().getId();
+                Category category = categories.get(info[7]);
                 library.books.get(info[0]).setCategory(category);
+
+                HashSet<String> newCategoryBooks = categories.get(info[6]).getBooks();
+                newCategoryBooks.add(info[0]);
+                categories.get(info[6]).setBooks(newCategoryBooks);
+
+                HashSet<String> oldCategoryBooks = categories.get(oldCategory).getBooks();
+                oldCategoryBooks.remove(info[0]);
+                categories.get(oldCategory).setBooks(oldCategoryBooks);
             }
             return true;
         }
@@ -223,6 +233,19 @@ public class LibraryManagement {
         } else if (libraries.get(info[1]).books.get(info[0]).isBorrowed()){
             System.out.println("not-allowed");
         } else {
+            boolean[] couldRemoveFromCategory = {true};
+            libraries.forEach((id, library1) -> {
+                if (!id.equals(info[0]) && library1.books.containsKey(info[0])){
+                    couldRemoveFromCategory[0] = false;
+                }
+            });
+            if (couldRemoveFromCategory[0]){
+                String category = library.books.get(info[0]).getCategory().getId();
+                HashSet<String> categoryBooks = categories.get(category).getBooks();
+                categoryBooks.remove(info[0]);
+                categories.get(category).setBooks(categoryBooks);
+            }
+
             library.books.remove(info[0]);
             System.out.println("success");
         }
@@ -237,10 +260,14 @@ public class LibraryManagement {
         if (library.thesis.containsKey(info[0])){
             return false;
         } else {
-            Category category = categories.getOrDefault(info[5], null);
+            Category category = categories.get(info[5]);
 
             Thesis thesis = new Thesis(info[0], info[1], info[2], info[3], info[4],
                     category, library);
+
+            HashSet<String> categoryThesis = categories.get(info[6]).getThesis();
+            categoryThesis.add(info[0]);
+            categories.get(info[6]).setThesis(categoryThesis);
 
             library.thesis.put(info[0], thesis);
             if (!theses.containsKey(info[0])){
@@ -274,8 +301,17 @@ public class LibraryManagement {
                 library.thesis.get(info[0]).setDefenceYear(info[5]);
             }
             if (!info[6].equals("-")){
-                Category category = categories.getOrDefault(info[6], null);
+                String oldCategory = library.thesis.get(info[0]).getCategory().getId();
+                Category category = categories.get(info[6]);
                 library.thesis.get(info[0]).setCategory(category);
+
+                HashSet<String> newCategoryThesis = categories.get(info[6]).getThesis();
+                newCategoryThesis.add(info[0]);
+                categories.get(info[6]).setThesis(newCategoryThesis);
+
+                HashSet<String> oldCategoryThesis = categories.get(oldCategory).getThesis();
+                oldCategoryThesis.remove(info[0]);
+                categories.get(oldCategory).setThesis(oldCategoryThesis);
             }
             return true;
         }
@@ -291,6 +327,19 @@ public class LibraryManagement {
         } else if (libraries.get(info[1]).thesis.get(info[0]).isBorrowed()){
             System.out.println("not-allowed");
         } else {
+            boolean[] couldRemoveFromCategory = {true};
+            libraries.forEach((id, library1) -> {
+                if (!id.equals(info[0]) && library1.thesis.containsKey(info[0])){
+                    couldRemoveFromCategory[0] = false;
+                }
+            });
+            if (couldRemoveFromCategory[0]){
+                String category = library.thesis.get(info[0]).getCategory().getId();
+                HashSet<String> categoryThesis = categories.get(category).getThesis();
+                categoryThesis.remove(info[0]);
+                categories.get(category).setThesis(categoryThesis);
+            }
+
             library.thesis.remove(info[0]);
             System.out.println("success");
         }
@@ -629,7 +678,7 @@ public class LibraryManagement {
     private static void search (String[] info){
         // 0: keyWord to search
 
-        String keyWord = info[0];
+        String keyWord = info[0].toLowerCase();
 
         ArrayList<String> foundSources = new ArrayList<>();
 
@@ -661,6 +710,62 @@ public class LibraryManagement {
                 System.out.print(foundSources.get(i));
             } else {
                 System.out.print("|" + foundSources.get(i));
+            }
+        }
+
+        System.out.println();
+    }
+
+    private static void searchUser (String[] info){
+        // 0: id, 1: passWord, 2: keyWord to search
+
+        if (!staff.containsKey(info[0]) && !students.containsKey(info[0])){
+            System.out.println("not-found");
+            return;
+        }
+
+        if (students.containsKey(info[0])){
+            if (!students.get(info[0]).getPassword().equals(info[1])){
+                System.out.println("invalid-pass");
+                return;
+            }
+        } else {
+            if (staff.get(info[0]).getPassword().equals(info[1])){
+                System.out.println("invalid-pass");
+                return;
+            }
+        }
+
+        String keyWord = info[2].toLowerCase();
+
+        ArrayList<String> foundIDs = new ArrayList<>();
+
+        staff.forEach((key, value) -> {
+            if (value.getFirstName().equals(keyWord) ||
+                value.getLastName().equals(keyWord)){
+                foundIDs.add(key);
+            }
+        });
+
+        students.forEach((key, value) -> {
+            if (value.getFirstName().equals(keyWord) ||
+                value.getLastName().equals(keyWord)){
+                foundIDs.add(key);
+            }
+        });
+
+        if (foundIDs.isEmpty()){
+            System.out.println("not-found");
+            return;
+        }
+
+        Collections.sort(foundIDs);
+
+        for (int i = 0; i < foundIDs.size(); i++) {
+            if (i == 0){
+                System.out.print(foundIDs.get(i));
+            } else {
+                System.out.print("|" + foundIDs.get(i));
             }
         }
 
