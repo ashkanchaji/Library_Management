@@ -61,16 +61,8 @@ public class LibraryManagement {
                     System.out.println("not-found");
                 }
                 break;
-            case "remove-book" : // is order OK?
-                if (libraries.get(info[1]).books.get(info[0]).isBorrowed()){
-                    System.out.println("not-allowed");
-                    break;
-                }
-                if (removeBook(info)){
-                    System.out.println("success");
-                } else {
-                    System.out.println("not-found");
-                }
+            case "remove-book" :
+                removeBook(info);
                 break;
             case "add-thesis" :
                 // *** IS THIS WAY CORRECT IN TEST CASES ? ***
@@ -91,15 +83,7 @@ public class LibraryManagement {
                 }
                 break;
             case "remove-thesis" : // is the order OK?
-                if (libraries.get(info[1]).thesis.get(info[0]).isBorrowed()){
-                    System.out.println("not-allowed");
-                    break;
-                }
-                if (removeThesis(info)){
-                    System.out.println("success");
-                } else {
-                    System.out.println("not-found");
-                }
+                removeThesis(info);
                 break;
             case "add-student" :
                 if (addStudent(info)) {
@@ -115,16 +99,8 @@ public class LibraryManagement {
                     System.out.println("not-found");
                 }
                 break;
-            case "remove-student" : // is order OK?
-                if (!students.get(info[0]).getBorrowedBooks().isEmpty()){
-                    System.out.println("not-allowed");
-                    break;
-                }
-                if (removeStudent(info)){
-                    System.out.println("success");
-                } else {
-                    System.out.println("not-found");
-                }
+            case "remove-student" :
+                removeStudent(info);
                 break;
             case "add-staff" :
                 if (addStaff(info)) {
@@ -140,16 +116,8 @@ public class LibraryManagement {
                     System.out.println("not-found");
                 }
                 break;
-            case "remove-staff" : // is order OK?
-                if (!staff.get(info[0]).getBorrowedBooks().isEmpty()){
-                    System.out.println("not-allowed");
-                    break;
-                }
-                if (removeStaff(info)){
-                    System.out.println("success");
-                } else {
-                    System.out.println("not-found");
-                }
+            case "remove-staff" :
+                removeStaff(info);
                 break;
             case "borrow" :
                 borrow(info);
@@ -237,16 +205,18 @@ public class LibraryManagement {
         }
     }
 
-    private static boolean removeBook(String[] info){
+    private static void removeBook(String[] info){
         // 0: bookID, 1: libraryID
 
         Library library = libraries.get(info[1]);
 
         if (!libraries.containsKey(info[1]) || !library.books.containsKey(info[0])) {
-            return false;
+            System.out.println("not-found");
+        } else if (libraries.get(info[1]).books.get(info[0]).isBorrowed()){
+            System.out.println("not-allowed");
         } else {
             library.books.remove(info[0]);
-            return true;
+            System.out.println("success");
         }
     }
 
@@ -300,16 +270,18 @@ public class LibraryManagement {
         }
     }
 
-    private static boolean removeThesis (String[] info){
+    private static void removeThesis (String[] info){
         // 0: thesisId, 1: libraryId
 
         Library library = libraries.get(info[1]);
 
         if (!libraries.containsKey(info[1]) || !library.thesis.containsKey(info[0])) {
-            return false;
+            System.out.println("not-found");
+        } else if (libraries.get(info[1]).thesis.get(info[0]).isBorrowed()){
+            System.out.println("not-allowed");
         } else {
             library.thesis.remove(info[0]);
-            return true;
+            System.out.println("success");
         }
     }
 
@@ -347,14 +319,16 @@ public class LibraryManagement {
         }
     }
 
-    private static boolean removeStudent (String[] info){
+    private static void removeStudent (String[] info){
         // 0: id
 
         if (!students.containsKey(info[0])){
-            return false;
+            System.out.println("not-found");
+        } else if (!students.get(info[0]).getBorrowedBooks().isEmpty()){
+            System.out.println("not-allowed");
         } else {
             students.remove(info[0]);
-            return true;
+            System.out.println("success");
         }
     }
 
@@ -392,14 +366,17 @@ public class LibraryManagement {
         }
     }
 
-    private static boolean removeStaff (String[] info){
+    private static void removeStaff (String[] info){
         // 0: id
 
         if (!staff.containsKey(info[0])){
-            return false;
-        } else {
+            System.out.println("not-found");
+        } else if (!staff.get(info[0]).getBorrowedBooks().isEmpty()){
+            System.out.println("not-allowed");
+        }
+        else {
             staff.remove(info[0]);
-            return true;
+            System.out.println("success");
         }
     }
 
