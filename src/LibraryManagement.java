@@ -470,17 +470,24 @@ public class LibraryManagement {
         // 4: date, 5: time
 
         Library library = libraries.getOrDefault(info[2], null);
+
+        // check if library exists
+        if (library == null) {
+            System.out.println("not-found");
+            return;
+        }
+
         Student student = students.getOrDefault(info[0], null);
         Staff staff1 = staff.getOrDefault(info[0], null);
         Book book = library.books.getOrDefault(info[3], null);
         Thesis thesis = library.thesis.getOrDefault(info[3], null);
 
-        // check if IDs are correct
-        if (library == null || (student == null && staff1 == null) ||
-                (book == null && thesis == null)){
+        // check if other IDs are correct
+        if (student == null && staff1 == null || book == null && thesis == null) {
             System.out.println("not-found");
             return;
         }
+
 
         // check if person has borrowed the source
         Borrow borrowedSource = null;
@@ -542,9 +549,6 @@ public class LibraryManagement {
         String personType = student != null ? "student" : "staff";
         String sourceType = book != null ? "book" : "thesis";
 
-        if (calculatePenalty(personType, sourceType, hoursDifference)){
-            return;
-        }
 
         ArrayList<Borrow> borrowedSources = student != null ? student.getBorrowedBooks() : staff1.getBorrowedBooks();
 
@@ -570,6 +574,11 @@ public class LibraryManagement {
                     libraries.get(info[2]).thesis.get(info[3]).setBorrowed(false);
                 }
             }
+        }
+
+
+        if (calculatePenalty(personType, sourceType, hoursDifference)){
+            return;
         }
 
         System.out.println("success");
