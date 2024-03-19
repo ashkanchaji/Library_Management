@@ -8,6 +8,8 @@ public class LibraryManagement {
     public static HashMap<String, Category> categories = new HashMap<>();
     public static HashMap<String, Student> students = new HashMap<>();
     public static HashMap<String, Staff> staff = new HashMap<>();
+    public static HashMap<String, Book> books = new HashMap<>();
+    public static HashMap<String, Thesis> theses = new HashMap<>();
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
@@ -125,6 +127,9 @@ public class LibraryManagement {
             case "return" :
                 returnSource(info);
                 break;
+            case "search" :
+                search(info);
+                break;
         }
     }
 
@@ -167,6 +172,9 @@ public class LibraryManagement {
                     category, library);
 
             library.books.put(info[0], book);
+            if (!books.containsKey(info[0])){
+                books.put(info[0], book);
+            }
             return true;
         }
     }
@@ -235,6 +243,9 @@ public class LibraryManagement {
                     category, library);
 
             library.thesis.put(info[0], thesis);
+            if (!theses.containsKey(info[0])){
+                theses.put(info[0], thesis);
+            }
             return true;
         }
     }
@@ -324,7 +335,8 @@ public class LibraryManagement {
 
         if (!students.containsKey(info[0])){
             System.out.println("not-found");
-        } else if (!students.get(info[0]).getBorrowedBooks().isEmpty()){
+        } else if (!students.get(info[0]).getBorrowedBooks().isEmpty() ||
+                    students.get(info[0]).getPenalty() != 0){
             System.out.println("not-allowed");
         } else {
             students.remove(info[0]);
@@ -371,7 +383,8 @@ public class LibraryManagement {
 
         if (!staff.containsKey(info[0])){
             System.out.println("not-found");
-        } else if (!staff.get(info[0]).getBorrowedBooks().isEmpty()){
+        } else if (!staff.get(info[0]).getBorrowedBooks().isEmpty() ||
+                    staff.get(info[0]).getPenalty() != 0){
             System.out.println("not-allowed");
         }
         else {
@@ -576,15 +589,25 @@ public class LibraryManagement {
             }
         }
 
+        long penalty = calculatePenalty(personType, sourceType, hoursDifference);
 
-        if (calculatePenalty(personType, sourceType, hoursDifference)){
+        if (penalty != 0 ){
+            System.out.println(penalty);
+            long personPenalties;
+            if (personType.equals("student")){
+                personPenalties = student.getPenalty() + penalty;
+                student.setPenalty(personPenalties);
+            } else {
+                personPenalties = staff1.getPenalty() + penalty;
+                staff1.setPenalty(personPenalties);
+            }
             return;
         }
 
         System.out.println("success");
     }
 
-    private static boolean calculatePenalty (String personType, String sourceType, long hoursDifference){
+    private static long calculatePenalty (String personType, String sourceType, long hoursDifference){
         long penaltyPerHour;
         long maxPenaltyTime;
 
@@ -597,10 +620,50 @@ public class LibraryManagement {
         }
 
         if (hoursDifference > maxPenaltyTime){
-            System.out.println((hoursDifference - maxPenaltyTime) * penaltyPerHour);
-            return true;
+            return (hoursDifference - maxPenaltyTime) * penaltyPerHour;
         } else {
-            return false;
+            return 0;
         }
+    }
+
+    private static void search (String[] info){
+        // 0: keyWord to search
+
+        String keyWord = info[0];
+
+        ArrayList<String> foundSources = new ArrayList<>();
+
+        books.forEach((key, value) -> {
+            if (value.getName().equals(keyWord) ||
+                value.getAuthor().equals(keyWord) ||
+                value.getPublisher().equals(keyWord)){
+                foundSources.add(key);
+            }
+        });
+
+        theses.forEach((key, value) -> {
+            if (value.getName().equals(keyWord) ||
+                value.getStudentName().equals(keyWord) ||
+                value.getProfessorName().equals(keyWord)){
+                foundSources.add(key);
+            }
+        });
+
+        if (foundSources.isEmpty()){
+            System.out.println("not-found");
+            return;
+        }
+
+        Collections.sort(foundSources);
+
+        for (int i = 0; i < foundSources.size(); i++) {
+            if (i == 0){
+                System.out.print(foundSources.get(i));
+            } else {
+                System.out.print("|" + foundSources.get(i));
+            }
+        }
+
+        System.out.println();
     }
 }

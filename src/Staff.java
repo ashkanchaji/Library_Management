@@ -8,6 +8,7 @@ public class Staff {
     private String nationalID;
     private String birthYear;
     private String address;
+    private long penalty;
     private ArrayList<Borrow> borrowedBooks;
 
     public Staff(String[] info) {
@@ -21,6 +22,7 @@ public class Staff {
         this.nationalID = info[4];
         this.birthYear = info[5];
         this.address = info[6];
+        penalty = 0;
         borrowedBooks = new ArrayList<>();
     }
 
@@ -86,6 +88,14 @@ public class Staff {
         if (!address.equals("-")){
             this.address = address;
         }
+    }
+
+    public long getPenalty() {
+        return penalty;
+    }
+
+    public void setPenalty(long penalty) {
+        this.penalty = penalty;
     }
 
     public ArrayList<Borrow> getBorrowedBooks() {
