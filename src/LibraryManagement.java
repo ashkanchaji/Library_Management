@@ -127,6 +127,12 @@ public class LibraryManagement {
             case "search" :
                 search(info);
                 break;
+            case "search-user" :
+                searchUser(info);
+                break;
+            case "category-report" :
+                categoryReport(info);
+                break;
         }
     }
 
@@ -168,8 +174,8 @@ public class LibraryManagement {
             Book book = new Book(info[0], info[1], info[2], info[3], info[4], info[5],
                     category, library);
 
-            HashSet<String> categoryBooks = categories.get(info[6]).getBooks();
-            categoryBooks.add(info[0]);
+            HashSet<Book> categoryBooks = categories.get(info[6]).getBooks();
+            categoryBooks.add(book);
             categories.get(info[6]).setBooks(categoryBooks);
 
             library.books.put(info[0], book);
@@ -207,16 +213,17 @@ public class LibraryManagement {
                 library.books.get(info[0]).setCopyCount(info[6]);
             }
             if (!info[7].equals("-")){
+                Book book = library.books.get(info[0]);
                 String oldCategory = library.books.get(info[0]).getCategory().getId();
                 Category category = categories.get(info[7]);
                 library.books.get(info[0]).setCategory(category);
 
-                HashSet<String> newCategoryBooks = categories.get(info[6]).getBooks();
-                newCategoryBooks.add(info[0]);
+                HashSet<Book> newCategoryBooks = categories.get(info[6]).getBooks();
+                newCategoryBooks.add(book);
                 categories.get(info[6]).setBooks(newCategoryBooks);
 
-                HashSet<String> oldCategoryBooks = categories.get(oldCategory).getBooks();
-                oldCategoryBooks.remove(info[0]);
+                HashSet<Book> oldCategoryBooks = categories.get(oldCategory).getBooks();
+                oldCategoryBooks.remove(book);
                 categories.get(oldCategory).setBooks(oldCategoryBooks);
             }
             return true;
@@ -235,14 +242,15 @@ public class LibraryManagement {
         } else {
             boolean[] couldRemoveFromCategory = {true};
             libraries.forEach((id, library1) -> {
-                if (!id.equals(info[0]) && library1.books.containsKey(info[0])){
+                if (!id.equals(info[1]) && library1.books.containsKey(info[0])){
                     couldRemoveFromCategory[0] = false;
                 }
             });
             if (couldRemoveFromCategory[0]){
+                Book book = library.books.get(info[0]);
                 String category = library.books.get(info[0]).getCategory().getId();
-                HashSet<String> categoryBooks = categories.get(category).getBooks();
-                categoryBooks.remove(info[0]);
+                HashSet<Book> categoryBooks = categories.get(category).getBooks();
+                categoryBooks.remove(book);
                 categories.get(category).setBooks(categoryBooks);
             }
 
@@ -265,9 +273,9 @@ public class LibraryManagement {
             Thesis thesis = new Thesis(info[0], info[1], info[2], info[3], info[4],
                     category, library);
 
-            HashSet<String> categoryThesis = categories.get(info[6]).getThesis();
-            categoryThesis.add(info[0]);
-            categories.get(info[6]).setThesis(categoryThesis);
+            HashSet<Thesis> categoryThesis = categories.get(info[5]).getThesis();
+            categoryThesis.add(thesis);
+            categories.get(info[5]).setThesis(categoryThesis);
 
             library.thesis.put(info[0], thesis);
             if (!theses.containsKey(info[0])){
@@ -301,16 +309,17 @@ public class LibraryManagement {
                 library.thesis.get(info[0]).setDefenceYear(info[5]);
             }
             if (!info[6].equals("-")){
+                Thesis thesis = library.thesis.get(info[0]);
                 String oldCategory = library.thesis.get(info[0]).getCategory().getId();
                 Category category = categories.get(info[6]);
                 library.thesis.get(info[0]).setCategory(category);
 
-                HashSet<String> newCategoryThesis = categories.get(info[6]).getThesis();
-                newCategoryThesis.add(info[0]);
+                HashSet<Thesis> newCategoryThesis = categories.get(info[6]).getThesis();
+                newCategoryThesis.add(thesis);
                 categories.get(info[6]).setThesis(newCategoryThesis);
 
-                HashSet<String> oldCategoryThesis = categories.get(oldCategory).getThesis();
-                oldCategoryThesis.remove(info[0]);
+                HashSet<Thesis> oldCategoryThesis = categories.get(oldCategory).getThesis();
+                oldCategoryThesis.remove(thesis);
                 categories.get(oldCategory).setThesis(oldCategoryThesis);
             }
             return true;
@@ -329,14 +338,15 @@ public class LibraryManagement {
         } else {
             boolean[] couldRemoveFromCategory = {true};
             libraries.forEach((id, library1) -> {
-                if (!id.equals(info[0]) && library1.thesis.containsKey(info[0])){
+                if (!id.equals(info[1]) && library1.thesis.containsKey(info[0])){
                     couldRemoveFromCategory[0] = false;
                 }
             });
             if (couldRemoveFromCategory[0]){
+                Thesis thesis = library.thesis.get(info[0]);
                 String category = library.thesis.get(info[0]).getCategory().getId();
-                HashSet<String> categoryThesis = categories.get(category).getThesis();
-                categoryThesis.remove(info[0]);
+                HashSet<Thesis> categoryThesis = categories.get(category).getThesis();
+                categoryThesis.remove(thesis);
                 categories.get(category).setThesis(categoryThesis);
             }
 
@@ -770,5 +780,25 @@ public class LibraryManagement {
         }
 
         System.out.println();
+    }
+
+    private static void categoryReport (String[] info){ // is it done correctly?
+        // 0: category id
+
+        if (!categories.containsKey(info[0])){
+            System.out.println("not-found");
+            return;
+        }
+
+        int bookCount = 0;
+        int thesisCount = categories.get(info[0]).getThesis().size();
+
+        HashSet<Book> categoryBooks = categories.get(info[0]).getBooks();
+
+        for (Book book : categoryBooks){
+            bookCount += book.getCopyCount();
+        }
+
+        System.out.println(bookCount + " " + thesisCount);
     }
 }

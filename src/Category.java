@@ -3,8 +3,8 @@ import java.util.HashSet;
 public class Category {
     private final String id;
     private final String name;
-    private HashSet<String> books;
-    private HashSet<String> thesis;
+    private HashSet<Book> books;
+    private HashSet<Thesis> thesis;
 
     public Category(String id, String name){
         this.id = id;
@@ -21,19 +21,19 @@ public class Category {
         return name;
     }
 
-    public HashSet<String> getBooks() {
+    public HashSet<Book> getBooks() {
         return books;
     }
 
-    public void setBooks(HashSet<String> books) {
+    public void setBooks(HashSet<Book> books) {
         this.books = books;
     }
 
-    public HashSet<String> getThesis() {
+    public HashSet<Thesis> getThesis() {
         return thesis;
     }
 
-    public void setThesis(HashSet<String> thesis) {
+    public void setThesis(HashSet<Thesis> thesis) {
         this.thesis = thesis;
     }
 }
