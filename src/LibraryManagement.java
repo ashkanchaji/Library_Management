@@ -11,6 +11,7 @@ public class LibraryManagement {
     public static HashMap<String, Staff> staff = new HashMap<>();
     public static HashMap<String, Book> books = new HashMap<>();
     public static HashMap<String, Thesis> theses = new HashMap<>();
+    public static HashSet<Borrow> borrows = new HashSet<>();
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
@@ -512,9 +513,24 @@ public class LibraryManagement {
                 return;
             }
         }
-
+        int maxBorrowTime;
+        if (personType.equals("student")){
+            if (writingType.equals("book")){
+                maxBorrowTime = 240;
+            } else {
+                maxBorrowTime = 168;
+            }
+        } else {
+            if (writingType.equals("book")){
+                maxBorrowTime = 336;
+            } else {
+                maxBorrowTime = 240;
+            }
+        }
         // borrow the book
-        Borrow borrowedBook = new Borrow(info[2], info[3], info[4], info[5]);
+        Borrow borrowedBook = new Borrow(info[2], info[3], info[0], info[4], info[5], maxBorrowTime);
+
+        borrows.add(borrowedBook);
 
         if (personType.equals("student")){
             ArrayList<Borrow> borrowedBooks = students.get(info[0]).getBorrowedBooks();
@@ -601,25 +617,8 @@ public class LibraryManagement {
         }
 
         // check if person should be penalized
-        String[] borrowDateInfo = borrowedSource.getDate().split("-");
-        String[] borrowTimeInfo = borrowedSource.getTime().split(":");
 
-        String[] returnDateInfo = info[4].split("-");
-        String[] returnTimeInfo = info[5].split(":");
-
-        LocalDateTime borrowDate = LocalDateTime.of(Integer.parseInt(borrowDateInfo[0]),
-                                            Integer.parseInt(borrowDateInfo[1]),
-                                            Integer.parseInt(borrowDateInfo[2]),
-                                            Integer.parseInt(borrowTimeInfo[0]),
-                                            Integer.parseInt(borrowTimeInfo[1]));
-        LocalDateTime returnDate = LocalDateTime.of(Integer.parseInt(returnDateInfo[0]),
-                                            Integer.parseInt(returnDateInfo[1]),
-                                            Integer.parseInt(returnDateInfo[2]),
-                                            Integer.parseInt(returnTimeInfo[0]),
-                                            Integer.parseInt(returnTimeInfo[1]));
-        Duration duration = Duration.between(borrowDate, returnDate);
-
-        long hoursDifference = duration.toHours();
+        long hoursDifference = borrowDuration(borrowedSource, info[4], info[5]);
 
         String personType = student != null ? "student" : "staff";
         String sourceType = book != null ? "book" : "thesis";
@@ -651,6 +650,19 @@ public class LibraryManagement {
             }
         }
 
+        it = borrows.iterator();
+
+        while (it.hasNext()){
+            Borrow borrow = it.next();
+
+            if (borrow.getWritingID().equals(info[3]) &&
+                    borrow.getLibraryID().equals(info[2]) &&
+                    borrow.getPersonId().equals(info[0])) {
+                it.remove();
+                break;
+            }
+        }
+
         long penalty = calculatePenalty(personType, sourceType, hoursDifference);
 
         if (penalty != 0 ){
@@ -667,6 +679,28 @@ public class LibraryManagement {
         }
 
         System.out.println("success");
+    }
+
+    private static long borrowDuration (Borrow borrow, String returningDate, String returningTime){
+        String[] borrowDateInfo = borrow.getDate().split("-");
+        String[] borrowTimeInfo = borrow.getTime().split(":");
+
+        String[] returnDateInfo = returningDate.split("-");
+        String[] returnTimeInfo = returningTime.split(":");
+
+        LocalDateTime borrowDate = LocalDateTime.of(Integer.parseInt(borrowDateInfo[0]),
+                Integer.parseInt(borrowDateInfo[1]),
+                Integer.parseInt(borrowDateInfo[2]),
+                Integer.parseInt(borrowTimeInfo[0]),
+                Integer.parseInt(borrowTimeInfo[1]));
+        LocalDateTime returnDate = LocalDateTime.of(Integer.parseInt(returnDateInfo[0]),
+                Integer.parseInt(returnDateInfo[1]),
+                Integer.parseInt(returnDateInfo[2]),
+                Integer.parseInt(returnTimeInfo[0]),
+                Integer.parseInt(returnTimeInfo[1]));
+        Duration duration = Duration.between(borrowDate, returnDate);
+
+        return duration.toHours();
     }
 
     private static long calculatePenalty (String personType, String sourceType, long hoursDifference){
@@ -803,6 +837,45 @@ public class LibraryManagement {
         }
 
         System.out.println(bookCount + " " + thesisCount);
+    }
+
+    private static void reportPassedDeadline (String[] info) { // is it implemented correctly?
+        // 0: libraryID, 1: date, 2: time
+
+        if (!libraries.containsKey(info[0])){
+            System.out.println("not-found");
+            return;
+        }
+        if (borrows.isEmpty()){
+            System.out.println("none");
+        }
+
+        ArrayList<String> passedDeadlineSources = new ArrayList<>();
+
+        for (Borrow borrow : borrows){
+            if (!passedDeadlineSources.contains(borrow.getWritingID()) &&
+                borrow.getLibraryID().equals(info[0]) &&
+               (borrowDuration(borrow, info[1], info[2]) > borrow.getMaxBorrowTime())) {
+                passedDeadlineSources.add(borrow.getWritingID());
+            }
+        }
+
+        if (passedDeadlineSources.isEmpty()){
+            System.out.println("none");
+            return;
+        }
+
+        Collections.sort(passedDeadlineSources);
+
+        for (int i = 0; i < passedDeadlineSources.size(); i++) {
+            if (i == 0){
+                System.out.print(passedDeadlineSources.get(i));
+            } else {
+                System.out.print("|" + passedDeadlineSources.get(i));
+            }
+        }
+
+        System.out.println();
     }
 
     private static void reportPenaltiesSum () {
