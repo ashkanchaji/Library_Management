@@ -21,6 +21,9 @@ public class LibraryManagement {
 
             if (input.equals("finish")) {
                 break;
+            } else if (input.equals("report-penalties-sum")) {
+                reportPenaltiesSum();
+                continue;
             }
 
             processInput(input);
@@ -134,8 +137,11 @@ public class LibraryManagement {
             case "category-report" :
                 categoryReport(info);
                 break;
-            case "report-penalties-sum" :
-                reportPenaltiesSum();
+            case "library-report" :
+                libraryReport(info);
+                break;
+            case "report-passed-deadline" :
+                reportPassedDeadline(info);
                 break;
         }
     }
@@ -777,7 +783,7 @@ public class LibraryManagement {
                 return;
             }
         } else {
-            if (staff.get(info[0]).getPassword().equals(info[1])){
+            if (!staff.get(info[0]).getPassword().equals(info[1])){
                 System.out.println("invalid-pass");
                 return;
             }
@@ -839,6 +845,43 @@ public class LibraryManagement {
         System.out.println(bookCount + " " + thesisCount);
     }
 
+    private static void libraryReport (String[] info){
+        // 0: libraryID
+
+        if (!libraries.containsKey(info[0])){
+            System.out.println("not-found");
+            return;
+        }
+
+        Library library = libraries.get(info[0]);
+
+        int[] totalBooks = {0};
+        int totalThesis = library.thesis.size();
+        int[] borrowedBooks = {0};
+        int[] borrowedThesis = {0};
+
+        HashMap<String, Book> libraryBooks = library.getBooks();
+        HashMap<String, Thesis> libraryThesis = library.getThesis();
+
+        libraryBooks.forEach((id, book) -> {
+            // should I count like this??? maybe even ***countNow*** ???
+            totalBooks[0] += book.getCopyCount();
+            if (book.isBorrowed()){
+                // should I count like this???
+                borrowedBooks[0] += book.getCopyCount() - book.getCopyCountNow();
+            }
+        });
+
+        libraryThesis.forEach((id, thesis) -> {
+            if (thesis.isBorrowed()){
+                borrowedThesis[0]++;
+            }
+        });
+
+        System.out.printf("%d %d %d %d\n", totalBooks[0], totalThesis,
+                                            borrowedBooks[0], borrowedThesis[0]);
+    }
+
     private static void reportPassedDeadline (String[] info) { // is it implemented correctly?
         // 0: libraryID, 1: date, 2: time
 
@@ -848,6 +891,7 @@ public class LibraryManagement {
         }
         if (borrows.isEmpty()){
             System.out.println("none");
+            return;
         }
 
         ArrayList<String> passedDeadlineSources = new ArrayList<>();

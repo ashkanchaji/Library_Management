@@ -19,4 +19,12 @@ public class Library {
         books = new HashMap<>();
         thesis = new HashMap<>();
     }
+
+    public HashMap<String, Book> getBooks() {
+        return books;
+    }
+
+    public HashMap<String, Thesis> getThesis() {
+        return thesis;
+    }
 }
