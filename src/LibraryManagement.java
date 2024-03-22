@@ -14,6 +14,9 @@ public class LibraryManagement {
     public static HashSet<Borrow> borrows = new HashSet<>();
 
     public static void main(String[] args) {
+        //Category nullCategory = new Category("null", "null");
+        //categories.put("null", nullCategory);
+
         Scanner scanner = new Scanner(System.in);
 
         while (scanner.hasNextLine()) {
@@ -189,7 +192,7 @@ public class LibraryManagement {
             categories.get(info[6]).setBooks(categoryBooks);
 
             library.books.put(info[0], book);
-            if (!books.containsKey(info[0])){
+            if (books.containsKey(info[0])){
                 books.put(info[0], book);
             }
             return true;
@@ -228,9 +231,9 @@ public class LibraryManagement {
                 Category category = categories.get(info[7]);
                 library.books.get(info[0]).setCategory(category);
 
-                HashSet<Book> newCategoryBooks = categories.get(info[6]).getBooks();
+                HashSet<Book> newCategoryBooks = categories.get(info[7]).getBooks();
                 newCategoryBooks.add(book);
-                categories.get(info[6]).setBooks(newCategoryBooks);
+                categories.get(info[7]).setBooks(newCategoryBooks);
 
                 HashSet<Book> oldCategoryBooks = categories.get(oldCategory).getBooks();
                 oldCategoryBooks.remove(book);
@@ -653,6 +656,7 @@ public class LibraryManagement {
                 } else {
                     libraries.get(info[2]).thesis.get(info[3]).setBorrowed(false);
                 }
+                break;
             }
         }
 
@@ -735,7 +739,28 @@ public class LibraryManagement {
 
         ArrayList<String> foundSources = new ArrayList<>();
 
-        books.forEach((key, value) -> {
+        libraries.forEach((libraryId, library) -> {
+            HashMap<String, Book> libraryBook = library.getBooks();
+            HashMap<String, Thesis> libraryThesis = library.getThesis();
+
+            libraryBook.forEach((bookID, book) -> {
+                if (book.getName().contains(keyWord) ||
+                    book.getAuthor().contains(keyWord) ||
+                    book.getPublisher().contains(keyWord)) {
+                    foundSources.add(bookID);
+                }
+            });
+
+            libraryThesis.forEach((thesisID, thesis) -> {
+                if (thesis.getName().contains(keyWord) ||
+                        thesis.getStudentName().contains(keyWord) ||
+                        thesis.getProfessorName().contains(keyWord)) {
+                    foundSources.add(thesisID);
+                }
+            });
+        });
+
+        /*books.forEach((key, value) -> {
             if (value.getName().equals(keyWord) ||
                 value.getAuthor().equals(keyWord) ||
                 value.getPublisher().equals(keyWord)){
@@ -749,7 +774,7 @@ public class LibraryManagement {
                 value.getProfessorName().equals(keyWord)){
                 foundSources.add(key);
             }
-        });
+        });*/
 
         if (foundSources.isEmpty()){
             System.out.println("not-found");
@@ -794,15 +819,15 @@ public class LibraryManagement {
         ArrayList<String> foundIDs = new ArrayList<>();
 
         staff.forEach((key, value) -> {
-            if (value.getFirstName().equals(keyWord) ||
-                value.getLastName().equals(keyWord)){
+            if (value.getFirstName().contains(keyWord) ||
+                value.getLastName().contains(keyWord)){
                 foundIDs.add(key);
             }
         });
 
         students.forEach((key, value) -> {
-            if (value.getFirstName().equals(keyWord) ||
-                value.getLastName().equals(keyWord)){
+            if (value.getFirstName().contains(keyWord) ||
+                value.getLastName().contains(keyWord)){
                 foundIDs.add(key);
             }
         });
@@ -937,5 +962,11 @@ public class LibraryManagement {
         long finalTotalPenalties = totalPenalties[0];
 
         System.out.println(finalTotalPenalties);
+    }
+
+    private static void reserveSeat (String[] info){
+        // 0: ID, 1: password, 2: libraryID, 3: date, 4: timeStart, 5: timeEnd
+
+
     }
 }
