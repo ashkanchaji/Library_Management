@@ -1,5 +1,6 @@
 import java.time.LocalDateTime;
 import java.time.Duration;
+import java.time.LocalTime;
 import java.util.*;
 
 public class LibraryManagement {
@@ -12,6 +13,7 @@ public class LibraryManagement {
     public static HashMap<String, Book> books = new HashMap<>();
     public static HashMap<String, Thesis> theses = new HashMap<>();
     public static HashSet<Borrow> borrows = new HashSet<>();
+    public static HashSet<ReserveSeat> reserveSeats = new HashSet<>();
 
     public static void main(String[] args) {
         //Category nullCategory = new Category("null", "null");
@@ -145,6 +147,11 @@ public class LibraryManagement {
                 break;
             case "report-passed-deadline" :
                 reportPassedDeadline(info);
+                break;
+            case "reserve-seat" :
+                reserveSeat(info);
+                break;
+            default :
                 break;
         }
     }
@@ -967,6 +974,116 @@ public class LibraryManagement {
     private static void reserveSeat (String[] info){
         // 0: ID, 1: password, 2: libraryID, 3: date, 4: timeStart, 5: timeEnd
 
+        if (!students.containsKey(info[0]) && !staff.containsKey(info[0])){
+            System.out.println("not-found");
+            return;
+        }
 
+        Student student = students.getOrDefault(info[0], null);
+        Staff staff1 = staff.getOrDefault(info[0], null);
+
+        if (student != null) {
+            if (!students.get(info[0]).getPassword().equals(info[1])) {
+                System.out.println("invalid-pass");
+                return;
+            }
+        } else {
+            if (!staff.get(info[0]).getPassword().equals(info[1])){
+                System.out.println("invalid-pass");
+                return;
+            }
+        }
+
+        String[] dateInfo = info[3].split("-");
+        String[] startTimeInfo = info[4].split(":");
+        String[] endTimeInfo = info[5].split(":");
+
+        LocalDateTime startTime = LocalDateTime.of(
+                Integer.parseInt(dateInfo[0]),
+                Integer.parseInt(dateInfo[1]),
+                Integer.parseInt(dateInfo[2]),
+                Integer.parseInt(startTimeInfo[0]),
+                Integer.parseInt(startTimeInfo[1]));
+        LocalDateTime endTime = LocalDateTime.of(
+                Integer.parseInt(dateInfo[0]),
+                Integer.parseInt(dateInfo[1]),
+                Integer.parseInt(dateInfo[2]),
+                Integer.parseInt(endTimeInfo[0]),
+                Integer.parseInt(endTimeInfo[1]));
+        Duration duration = Duration.between(startTime, endTime);
+
+        // how should the minutes be counted?
+        if (duration.toHours() > 8 || (duration.toHours() == 8 && duration.toMinutes() != 0)){
+            System.out.println("not-allowed");
+            return;
+        }
+
+        if (student != null) {
+            if (!student.getReserveSeats().isEmpty()){
+                for (ReserveSeat reserveSeat : student.getReserveSeats()){
+                    if (reserveSeat.getDate().equals(info[3])){
+                        System.out.println("not-allowed");
+                        return;
+                    }
+                }
+            }
+        } else {
+            if (!staff1.getReserveSeats().isEmpty()){
+                for (ReserveSeat reserveSeat : staff1.getReserveSeats()){
+                    if (reserveSeat.getDate().equals(info[3])){
+                        System.out.println("not-allowed");
+                        return;
+                    }
+                }
+            }
+        }
+
+        for (ReserveSeat reserveSeat : reserveSeats){
+            if (reserveSeat.getLibraryID().equals(info[2])){
+                if (reserveSeat.getDate().equals(info[3])){
+                    String startTime1 = reserveSeat.getStartTime();
+                    String endTime1 = reserveSeat.getEndTime();
+
+                    if (checkTimeInterfere(startTime1, endTime1, info[4], info[5])){
+                        System.out.println("not-available");
+                        return;
+                    }
+                }
+            }
+        }
+
+        ReserveSeat reserveSeat = new ReserveSeat(info[2], info[3], info[4], info[5]);
+
+        reserveSeats.add(reserveSeat);
+        if (student != null){
+            HashSet<ReserveSeat> studentReservedSeats = student.getReserveSeats();
+            studentReservedSeats.add(reserveSeat);
+            student.setReserveSeats(studentReservedSeats);
+        } else {
+            HashSet<ReserveSeat> staffReservedSeats = staff1.getReserveSeats();
+            staffReservedSeats.add(reserveSeat);
+            staff1.setReserveSeats(staffReservedSeats);
+        }
+
+        System.out.println("success");
+    }
+
+    private static boolean checkTimeInterfere (String startTime1, String endTime1,
+                                               String startTime2, String endTime2){
+        LocalTime startTime = LocalTime.parse(startTime1 + ":00");
+        LocalTime endTime = LocalTime.parse(endTime1 + ":00");
+
+        LocalTime targetStartTime = LocalTime.parse(startTime2 + ":00");
+        LocalTime targetEndTime = LocalTime.parse(endTime2 + ":00");
+
+        // is the equal correct?
+        if (targetStartTime.equals(startTime) || targetEndTime.equals(endTime) ||
+            (targetStartTime.isBefore(endTime) && targetStartTime.isAfter(startTime)) ||
+            (targetEndTime.isBefore(endTime) && targetEndTime.isAfter(startTime)) ||
+            (targetStartTime.isBefore(startTime) && targetEndTime.isAfter(endTime))) {
+            return true;
+        }
+
+        return false;
     }
 }

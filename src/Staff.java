@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.HashSet;
 
 public class Staff {
     private final String id;
@@ -8,6 +9,7 @@ public class Staff {
     private String nationalID;
     private String birthYear;
     private String address;
+    private HashSet<ReserveSeat> reserveSeats;
     private long penalty;
     private ArrayList<Borrow> borrowedBooks;
 
@@ -22,6 +24,7 @@ public class Staff {
         this.nationalID = info[4];
         this.birthYear = info[5];
         this.address = info[6];
+        reserveSeats = new HashSet<>();
         penalty = 0;
         borrowedBooks = new ArrayList<>();
     }
@@ -88,6 +91,14 @@ public class Staff {
         if (!address.equals("-")){
             this.address = address;
         }
+    }
+
+    public HashSet<ReserveSeat> getReserveSeats() {
+        return reserveSeats;
+    }
+
+    public void setReserveSeats(HashSet<ReserveSeat> reserveSeats) {
+        this.reserveSeats = reserveSeats;
     }
 
     public long getPenalty() {
