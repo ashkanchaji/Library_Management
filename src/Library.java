@@ -27,4 +27,8 @@ public class Library {
     public HashMap<String, Thesis> getThesis() {
         return thesis;
     }
+
+    public Integer getTableCount() {
+        return tableCount;
+    }
 }

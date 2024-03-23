@@ -1026,10 +1026,9 @@ public class LibraryManagement {
 
         if (student != null) {
             if (!student.getReserveSeats().isEmpty()) {
-                //System.out.println("not-allowed");
-                //return;
                 for (ReserveSeat reserveSeat : student.getReserveSeats()) {
-                    if (reserveSeat.getDate().equals(info[3])) {
+                    if (reserveSeat.getDate().equals(info[3]) &&
+                        reserveSeat.getPersonID().equals(info[0])) {
                         System.out.println("not-allowed");
                         return;
                     }
@@ -1037,16 +1036,18 @@ public class LibraryManagement {
             }
         } else {
             if (!staff1.getReserveSeats().isEmpty()) {
-                //System.out.println("not-allowed");
-                //return;
                 for (ReserveSeat reserveSeat : staff1.getReserveSeats()) {
-                    if (reserveSeat.getDate().equals(info[3])) {
+                    if (reserveSeat.getDate().equals(info[3]) &&
+                        reserveSeat.getPersonID().equals(info[0])) {
                         System.out.println("not-allowed");
                         return;
                     }
                 }
             }
         }
+
+        int tableCount = libraries.get(info[2]).getTableCount();
+        int reservedSeatsCount = 0;
 
         for (ReserveSeat reserveSeat : reserveSeats) {
             if (reserveSeat.getLibraryID().equals(info[2])) {
@@ -1055,14 +1056,18 @@ public class LibraryManagement {
                     String endTime1 = reserveSeat.getEndTime();
 
                     if (checkTimeInterfere(startTime1, endTime1, info[4], info[5])) {
-                        System.out.println("not-available");
-                        return;
+                        reservedSeatsCount++;
                     }
                 }
             }
         }
 
-        ReserveSeat reserveSeat = new ReserveSeat(info[2], info[3], info[4], info[5]);
+        if (reservedSeatsCount == tableCount){
+            System.out.println("not-available");
+            return;
+        }
+
+        ReserveSeat reserveSeat = new ReserveSeat(info[0], info[2], info[3], info[4], info[5]);
 
         reserveSeats.add(reserveSeat);
         if (student != null) {
