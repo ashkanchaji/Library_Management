@@ -595,7 +595,7 @@ public class LibraryManagement {
 
 
         // check if person has borrowed the source
-        Borrow borrowedSource = null;
+        HashMap<Long, Borrow> borrowedSources = new HashMap<>();
         Iterator<Borrow> it;
 
         if (student != null){
@@ -608,12 +608,12 @@ public class LibraryManagement {
             Borrow borrow = it.next();
             if (borrow.getWritingID().equals(info[3]) &&
                     borrow.getLibraryID().equals(info[2])){
-                borrowedSource = borrow;
-                break;
+                Long hoursDifference = borrowDuration(borrow, info[4], info[5]);
+                borrowedSources.put(hoursDifference, borrow);
             }
         }
 
-        if (borrowedSource == null){
+        if (borrowedSources.isEmpty()){
             System.out.println("not-found");
             return;
         }
@@ -632,21 +632,52 @@ public class LibraryManagement {
         }
 
         // check if person should be penalized
+        Borrow borrowToRemove;
+        long leastPenaltyTime = Long.MAX_VALUE;
+        long oldestBorrowTime = 0L;
+        Long toRemoveKey = -1L;
 
-        long hoursDifference = borrowDuration(borrowedSource, info[4], info[5]);
+        // doing it right???
+        for (Long hoursDifference : borrowedSources.keySet()){
+            Borrow borrow = borrowedSources.get(hoursDifference);
+
+            if (hoursDifference > borrow.getMaxBorrowTime()){
+                for (Long hourDiff : borrowedSources.keySet()){
+                    Borrow borrowedSource = borrowedSources.get(hourDiff);
+                    if (hourDiff > borrowedSource.getMaxBorrowTime()){
+                        long penaltyTime =  hourDiff - borrowedSource.getMaxBorrowTime();
+
+                        if (penaltyTime < leastPenaltyTime) {
+                            leastPenaltyTime = penaltyTime;
+                            toRemoveKey = hourDiff;
+                        }
+                    }
+                }
+                break;
+            } else {
+                if (hoursDifference > oldestBorrowTime){
+                    oldestBorrowTime = hoursDifference;
+                    toRemoveKey = hoursDifference;
+                }
+            }
+        }
+
+        borrowToRemove = borrowedSources.get(toRemoveKey);
+        String dateToRemove = borrowToRemove.getDate();
+
 
         String personType = student != null ? "student" : "staff";
         String sourceType = book != null ? "book" : "thesis";
 
+        ArrayList<Borrow> personBorrowedSources = student != null ? student.getBorrowedBooks() : staff1.getBorrowedBooks();
 
-        ArrayList<Borrow> borrowedSources = student != null ? student.getBorrowedBooks() : staff1.getBorrowedBooks();
-
-        it = borrowedSources.iterator();
+        it = personBorrowedSources.iterator();
 
         while (it.hasNext()){
             Borrow borrow = it.next();
             if (borrow.getWritingID().equals(info[3]) &&
-                    borrow.getLibraryID().equals(info[2])){
+                    borrow.getLibraryID().equals(info[2]) &&
+                    borrow.getDate().equals(dateToRemove)){
                 it.remove();
 
                 if (book != null){
@@ -667,9 +698,9 @@ public class LibraryManagement {
         }
 
         if (personType.equals("student")){
-            students.get(info[0]).setBorrowedBooks(borrowedSources);
+            students.get(info[0]).setBorrowedBooks(personBorrowedSources);
         } else {
-            staff.get(info[0]).setBorrowedBooks(borrowedSources);
+            staff.get(info[0]).setBorrowedBooks(personBorrowedSources);
         }
 
         it = borrows.iterator();
@@ -685,7 +716,7 @@ public class LibraryManagement {
             }
         }
 
-        long penalty = calculatePenalty(personType, sourceType, hoursDifference);
+        long penalty = calculatePenalty(personType, sourceType, toRemoveKey);
 
         if (penalty != 0 ){
             System.out.println(penalty);
