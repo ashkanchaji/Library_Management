@@ -6,6 +6,7 @@ public class Library {
     private final String establishYear;
     private final Integer tableCount;
     private final String address;
+    // needed to be public for the ease of access
     public HashMap<String, Book> books;
     public HashMap<String, Thesis> thesis;
 
@@ -20,15 +21,39 @@ public class Library {
         thesis = new HashMap<>();
     }
 
+    public String getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getEstablishYear() {
+        return establishYear;
+    }
+
+    public Integer getTableCount() {
+        return tableCount;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
     public HashMap<String, Book> getBooks() {
         return books;
+    }
+
+    public void setBooks(HashMap<String, Book> books) {
+        this.books = books;
     }
 
     public HashMap<String, Thesis> getThesis() {
         return thesis;
     }
 
-    public Integer getTableCount() {
-        return tableCount;
+    public void setThesis(HashMap<String, Thesis> thesis) {
+        this.thesis = thesis;
     }
 }

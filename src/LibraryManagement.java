@@ -5,14 +5,15 @@ import java.util.*;
 
 public class LibraryManagement {
 
-    public static HashMap<String, Library> libraries = new HashMap<>();
-    public static HashMap<String, Category> categories = new HashMap<>();
-    public static HashMap<String, Student> students = new HashMap<>();
-    public static HashMap<String, Staff> staff = new HashMap<>();
-    public static HashSet<Borrow> borrows = new HashSet<>();
-    public static HashSet<ReserveSeat> reserveSeats = new HashSet<>();
+    private static HashMap<String, Library> libraries = new HashMap<>();
+    private static HashMap<String, Category> categories = new HashMap<>();
+    private static HashMap<String, Student> students = new HashMap<>();
+    private static HashMap<String, Staff> staff = new HashMap<>();
+    private static HashSet<Borrow> borrows = new HashSet<>();
+    private static HashSet<ReserveSeat> reserveSeats = new HashSet<>();
 
     public static void main(String[] args) {
+        // add the null category as default
         Category nullCategory = new Category("null", "null");
         categories.put("null", nullCategory);
 
@@ -21,6 +22,7 @@ public class LibraryManagement {
         while (scanner.hasNextLine()) {
             String input = scanner.nextLine();
 
+            // first check the no info commands
             if (input.equals("finish")) {
                 break;
             } else if (input.equals("report-penalties-sum")) {
@@ -39,87 +41,43 @@ public class LibraryManagement {
 
         switch (commands[0]) {
             case "add-library":
-                if (addLibrary(info)) {
-                    System.out.println("success");
-                } else {
-                    System.out.println("duplicate-id");
-                }
+                addLibrary(info);
                 break;
             case "add-category":
-                if (addCategory(info)) {
-                    System.out.println("success");
-                } else {
-                    System.out.println("duplicate-id");
-                }
+                addCategory(info);
                 break;
             case "add-book":
-                if (!categories.containsKey(info[6]) || !libraries.containsKey(info[7])) {
-                    System.out.println("not-found");
-                } else if (addBook(info)) {
-                    System.out.println("success");
-                } else {
-                    System.out.println("duplicate-id");
-                }
+                addBook(info);
                 break;
             case "edit-book":
-                if (editBook(info)) {
-                    System.out.println("success");
-                } else {
-                    System.out.println("not-found");
-                }
+                editBook(info);
                 break;
             case "remove-book":
                 removeBook(info);
                 break;
             case "add-thesis":
-                if (!categories.containsKey(info[5]) || !libraries.containsKey(info[6])) {
-                    System.out.println("not-found");
-                } else if (addThesis(info)) {
-                    System.out.println("success");
-                } else {
-                    System.out.println("duplicate-id");
-                }
+                addThesis(info);
                 break;
             case "edit-thesis":
-                if (editThesis(info)) {
-                    System.out.println("success");
-                } else {
-                    System.out.println("not-found");
-                }
+                editThesis(info);
                 break;
-            case "remove-thesis": // is the order OK?
+            case "remove-thesis":
                 removeThesis(info);
                 break;
             case "add-student":
-                if (addStudent(info)) {
-                    System.out.println("success");
-                } else {
-                    System.out.println("duplicate-id");
-                }
+                addStudent(info);
                 break;
             case "edit-student":
-                if (editStudent(info)) {
-                    System.out.println("success");
-                } else {
-                    System.out.println("not-found");
-                }
+                editStudent(info);
                 break;
             case "remove-student":
                 removeStudent(info);
                 break;
             case "add-staff":
-                if (addStaff(info)) {
-                    System.out.println("success");
-                } else {
-                    System.out.println("duplicate-id");
-                }
+                addStaff(info);
                 break;
             case "edit-staff":
-                if (editStaff(info)) {
-                    System.out.println("success");
-                } else {
-                    System.out.println("not-found");
-                }
+                editStaff(info);
                 break;
             case "remove-staff":
                 removeStaff(info);
@@ -153,39 +111,50 @@ public class LibraryManagement {
         }
     }
 
-    private static boolean addLibrary(String[] info) {
+    private static void addLibrary(String[] info) {
         // 0: id, 1: name, 2: establishYear, 3: tableCount, 4: address
 
         if (libraries.containsKey(info[0])) {
-            return false;
-        } else {
-            Library library = new Library(info[0], info[1], info[2], info[3], info[4]);
-            libraries.put(info[0], library);
-            return true;
+            System.out.println("duplicate-id");
+            return ;
         }
+
+        Library library = new Library(info[0], info[1], info[2], info[3], info[4]);
+        libraries.put(info[0], library);
+
+        System.out.println("success");
     }
 
-    private static boolean addCategory(String[] info) {
+    private static void addCategory(String[] info) {
         // 0: id, 1: name
 
         if (categories.containsKey(info[0])) {
-            return false;
-        } else {
-            Category category = new Category(info[0], info[1]);
-            categories.put(info[0], category);
-            return true;
+            System.out.println("duplicate-id");
+            return ;
         }
+
+        Category category = new Category(info[0], info[1]);
+        categories.put(info[0], category);
+
+        System.out.println("success");
     }
 
-    private static boolean addBook(String[] info) {
+    private static void addBook(String[] info) {
         // 0: id, 1: name, 2: author, 3: publisher, 4: printYear, 5: copyCount,
         // 6: category, 7: library
+
+        if (!categories.containsKey(info[6]) || !libraries.containsKey(info[7])) {
+            System.out.println("not-found");
+            return;
+        }
 
         Library library = libraries.get(info[7]);
 
         if (library.books.containsKey(info[0])) {
-            return false;
-        } else {
+            System.out.println("duplicate-id");
+            return ;
+        }
+
             Category category = categories.get(info[6]);
 
             Book book = new Book(info[0], info[1], info[2], info[3], info[4], info[5],
@@ -196,11 +165,11 @@ public class LibraryManagement {
             categories.get(info[6]).setBooks(categoryBooks);
 
             libraries.get(info[7]).books.put(info[0], book);
-            return true;
-        }
+
+            System.out.println("success");
     }
 
-    private static boolean editBook(String[] info) {
+    private static void editBook(String[] info) {
         // 0: bookID, 1: libraryID, 2: name, 3: author, 4: publisher, 5: printYear,
         // 6: copyCount, 7: category
 
@@ -209,7 +178,7 @@ public class LibraryManagement {
         if ((!info[1].equals("-") && !libraries.containsKey(info[1])) ||
                 (!info[0].equals("-") && !library.books.containsKey(info[0])) ||
                 (!info[7].equals("-") && !categories.containsKey(info[7]))) {
-            return false;
+            System.out.println("not-found");
         } else {
             if (!info[2].equals("-")) {
                 library.books.get(info[0]).setName(info[2]);
@@ -240,7 +209,8 @@ public class LibraryManagement {
                 oldCategoryBooks.remove(book);
                 categories.get(oldCategory).setBooks(oldCategoryBooks);
             }
-            return true;
+
+            System.out.println("success");
         }
     }
 
@@ -273,30 +243,37 @@ public class LibraryManagement {
         }
     }
 
-    private static boolean addThesis(String[] info) {
+    private static void addThesis(String[] info) {
         // 0: thesisID, 1: name, 2: studentName, 3: professorName, 4: defenceYear
         // 5: category, 6: library
+
+        if (!categories.containsKey(info[5]) || !libraries.containsKey(info[6])) {
+            System.out.println("not-found");
+            return;
+        }
 
         Library library = libraries.get(info[6]);
 
         if (library.thesis.containsKey(info[0])) {
-            return false;
-        } else {
-            Category category = categories.get(info[5]);
-
-            Thesis thesis = new Thesis(info[0], info[1], info[2], info[3], info[4],
-                    category, library);
-
-            HashSet<Thesis> categoryThesis = categories.get(info[5]).getThesis();
-            categoryThesis.add(thesis);
-            categories.get(info[5]).setThesis(categoryThesis);
-
-            libraries.get(info[6]).thesis.put(info[0], thesis);
-            return true;
+            System.out.println("duplicate-id");
+            return;
         }
+
+        Category category = categories.get(info[5]);
+
+        Thesis thesis = new Thesis(info[0], info[1], info[2], info[3], info[4],
+                category, library);
+
+        HashSet<Thesis> categoryThesis = categories.get(info[5]).getThesis();
+        categoryThesis.add(thesis);
+        categories.get(info[5]).setThesis(categoryThesis);
+
+        libraries.get(info[6]).thesis.put(info[0], thesis);
+
+        System.out.println("success");
     }
 
-    private static boolean editThesis(String[] info) {
+    private static void editThesis(String[] info) {
         // 0: thesisID, 1: libraryID, 2: name, 3: studentName, 4: professorName,
         // 5: defenceYear, 6: category
 
@@ -305,7 +282,7 @@ public class LibraryManagement {
         if ((!info[1].equals("-") && !libraries.containsKey(info[1])) ||
                 (!info[0].equals("-") && !library.thesis.containsKey(info[0])) ||
                 (!info[6].equals("-") && !categories.containsKey(info[6]))) {
-            return false;
+            System.out.println("not-found");
         } else {
             if (!info[2].equals("-")) {
                 library.thesis.get(info[0]).setName(info[2]);
@@ -333,7 +310,7 @@ public class LibraryManagement {
                 oldCategoryThesis.remove(thesis);
                 categories.get(oldCategory).setThesis(oldCategoryThesis);
             }
-            return true;
+            System.out.println("success");
         }
     }
 
@@ -366,25 +343,27 @@ public class LibraryManagement {
         }
     }
 
-    private static boolean addStudent(String[] info) {
+    private static void addStudent(String[] info) {
         // 0: id, 1: password, 2: firstName, 3: lastName, 4: nationalID,
         // 5: birthYear, 6: address
 
         if (students.containsKey(info[0])) {
-            return false;
-        } else {
-            Student student = new Student(info);
-            students.put(info[0], student);
-            return true;
+            System.out.println("duplicate-id");
+            return;
         }
+
+        Student student = new Student(info);
+        students.put(info[0], student);
+
+        System.out.println("success");
     }
 
-    private static boolean editStudent(String[] info) {
+    private static void editStudent(String[] info) {
         // 0: id, 1: password, 2: firstName, 3: lastName, 4: nationalID,
         // 5: birthYear, 6: address
 
         if (!students.containsKey(info[0])) {
-            return false;
+            System.out.println("not-found");
         } else {
             Student student = students.get(info[0]);
 
@@ -396,7 +375,8 @@ public class LibraryManagement {
             student.setAddress(info[6]);
 
             students.replace(info[0], student);
-            return true;
+
+            System.out.println("success");
         }
     }
 
@@ -414,25 +394,27 @@ public class LibraryManagement {
         }
     }
 
-    private static boolean addStaff(String[] info) {
+    private static void addStaff(String[] info) {
         // 0: id, 1: password, 2: firstName, 3: lastName, 4: nationalID,
         // 5: birthYear, 6: address
 
         if (staff.containsKey(info[0])) {
-            return false;
-        } else {
-            Staff newStaff = new Staff(info);
-            staff.put(info[0], newStaff);
-            return true;
+            System.out.println("duplicate-id");
+            return;
         }
+
+        Staff newStaff = new Staff(info);
+        staff.put(info[0], newStaff);
+
+        System.out.println("success");
     }
 
-    private static boolean editStaff(String[] info) {
+    private static void editStaff(String[] info) {
         // 0: id, 1: password, 2: firstName, 3: lastName, 4: nationalID,
         // 5: birthYear, 6: address
 
         if (!staff.containsKey(info[0])) {
-            return false;
+            System.out.println("not-found");
         } else {
             Staff thisStaff = staff.get(info[0]);
 
@@ -444,7 +426,8 @@ public class LibraryManagement {
             thisStaff.setAddress(info[6]);
 
             staff.replace(info[0], thisStaff);
-            return true;
+
+            System.out.println("success");
         }
     }
 
@@ -462,7 +445,7 @@ public class LibraryManagement {
         }
     }
 
-    private static void borrow(String[] info) { // sorry for the complex code but couldn't change it mid way
+    private static void borrow(String[] info) {
         // 0: personId, 1: password, 2: libraryID, 3: book/thesis ID
         // 4: date, 5: time
 
@@ -533,6 +516,7 @@ public class LibraryManagement {
                 maxBorrowTime = 240;
             }
         }
+
         // borrow the book
         Borrow borrowedBook = new Borrow(info[2], info[3], info[0], info[4], info[5], maxBorrowTime);
 
@@ -623,13 +607,13 @@ public class LibraryManagement {
             }
         }
 
-        // check if person should be penalized
+        // get the right source to return
         Borrow borrowToRemove;
         long leastPenaltyTime = Long.MAX_VALUE;
         long oldestBorrowTime = 0L;
         Long toRemoveKey = -1L;
 
-        // doing it right???
+
         for (Long hoursDifference : borrowedSources.keySet()){
             Borrow borrow = borrowedSources.get(hoursDifference);
 
@@ -661,6 +645,7 @@ public class LibraryManagement {
         String personType = student != null ? "student" : "staff";
         String sourceType = book != null ? "book" : "thesis";
 
+        // remove the source from all the collections
         ArrayList<Borrow> personBorrowedSources = student != null ? student.getBorrowedBooks() : staff1.getBorrowedBooks();
 
         it = personBorrowedSources.iterator();
@@ -709,6 +694,7 @@ public class LibraryManagement {
             }
         }
 
+        // check if the person should be penalized and calculate the penalty
         long penalty = calculatePenalty(personType, sourceType, toRemoveKey);
 
         if (penalty != 0 ){
@@ -870,7 +856,7 @@ public class LibraryManagement {
         System.out.println();
     }
 
-    private static void categoryReport(String[] info) { // is it done correctly?
+    private static void categoryReport(String[] info) {
         // 0: category id
 
         if (!categories.containsKey(info[0])) {
@@ -881,6 +867,7 @@ public class LibraryManagement {
         int bookCount = 0;
         int thesisCount = 0;
 
+        // apparently wrapper classes won't work with nested foreach methods
         for (String libraryID : libraries.keySet()){
             Library library = libraries.get(libraryID);
 
@@ -902,7 +889,6 @@ public class LibraryManagement {
                     thesisCount++;
                 }
             }
-
         }
 
         System.out.println(bookCount + " " + thesisCount);
@@ -927,10 +913,8 @@ public class LibraryManagement {
         HashMap<String, Thesis> libraryThesis = library.getThesis();
 
         libraryBooks.forEach((id, book) -> {
-            // should I count like this??? maybe even ***countNow*** ???
             totalBooks[0] += book.getCopyCount();
             if (book.isBorrowed()) {
-                // should I count like this???
                 borrowedBooks[0] += book.getCopyCount() - book.getCopyCountNow();
             }
         });
@@ -945,7 +929,7 @@ public class LibraryManagement {
                 borrowedBooks[0], borrowedThesis[0]);
     }
 
-    private static void reportPassedDeadline(String[] info) { // is it implemented correctly?
+    private static void reportPassedDeadline(String[] info) {
         // 0: libraryID, 1: date, 2: time
 
         if (!libraries.containsKey(info[0])) {
@@ -1026,6 +1010,7 @@ public class LibraryManagement {
             }
         }
 
+        // calculate the duration between reserve start and end time
         String[] dateInfo = info[3].split("-");
         String[] startTimeInfo = info[4].split(":");
         String[] endTimeInfo = info[5].split(":");
@@ -1042,14 +1027,16 @@ public class LibraryManagement {
                 Integer.parseInt(dateInfo[2]),
                 Integer.parseInt(endTimeInfo[0]),
                 Integer.parseInt(endTimeInfo[1]));
+
         Duration duration = Duration.between(startTime, endTime);
 
-        // how should the minutes be counted?
+
         if (duration.toMinutes() > 480) {
             System.out.println("not-allowed");
             return;
         }
 
+        // check if has reserve the same day
         if (student != null) {
             if (!student.getReserveSeats().isEmpty()) {
                 for (ReserveSeat reserveSeat : student.getReserveSeats()) {
@@ -1072,6 +1059,7 @@ public class LibraryManagement {
             }
         }
 
+        // check if a seat is available
         int tableCount = libraries.get(info[2]).getTableCount();
         int reservedSeatsCount = 0;
 
@@ -1093,6 +1081,7 @@ public class LibraryManagement {
             return;
         }
 
+        // reserve the seat
         ReserveSeat reserveSeat = new ReserveSeat(info[0], info[2], info[3], info[4], info[5]);
 
         reserveSeats.add(reserveSeat);
@@ -1117,14 +1106,12 @@ public class LibraryManagement {
         LocalTime targetStartTime = LocalTime.parse(startTime2 + ":00");
         LocalTime targetEndTime = LocalTime.parse(endTime2 + ":00");
 
-        // is the equal correct?
-        if (targetStartTime.equals(startTime) || targetEndTime.equals(endTime) ||
-                (targetStartTime.isBefore(endTime) && targetStartTime.isAfter(startTime)) ||
-                (targetEndTime.isBefore(endTime) && targetEndTime.isAfter(startTime)) ||
-                (targetStartTime.isBefore(startTime) && targetEndTime.isAfter(endTime))) {
-            return true;
-        }
+        boolean startsWithinRange = (targetStartTime.equals(startTime) ||
+                (targetStartTime.isAfter(startTime) && targetStartTime.isBefore(endTime)));
+        boolean endsWithinRange = (targetEndTime.equals(endTime) ||
+                (targetEndTime.isAfter(startTime) && targetEndTime.isBefore(endTime)));
+        boolean spansOverRange = (targetStartTime.isBefore(startTime) && targetEndTime.isAfter(endTime));
 
-        return false;
+        return startsWithinRange || endsWithinRange || spansOverRange;
     }
 }
