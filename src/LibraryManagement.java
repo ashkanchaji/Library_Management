@@ -9,8 +9,6 @@ public class LibraryManagement {
     public static HashMap<String, Category> categories = new HashMap<>();
     public static HashMap<String, Student> students = new HashMap<>();
     public static HashMap<String, Staff> staff = new HashMap<>();
-    public static HashMap<String, Book> books = new HashMap<>();
-    public static HashMap<String, Thesis> theses = new HashMap<>();
     public static HashSet<Borrow> borrows = new HashSet<>();
     public static HashSet<ReserveSeat> reserveSeats = new HashSet<>();
 
@@ -197,10 +195,7 @@ public class LibraryManagement {
             categoryBooks.add(book);
             categories.get(info[6]).setBooks(categoryBooks);
 
-            library.books.put(info[0], book);
-            if (books.containsKey(info[0])) {
-                books.put(info[0], book);
-            }
+            libraries.get(info[7]).books.put(info[0], book);
             return true;
         }
     }
@@ -235,7 +230,7 @@ public class LibraryManagement {
                 Book book = library.books.get(info[0]);
                 String oldCategory = library.books.get(info[0]).getCategory().getId();
                 Category category = categories.get(info[7]);
-                library.books.get(info[0]).setCategory(category);
+                libraries.get(info[1]).books.get(info[0]).setCategory(category);
 
                 HashSet<Book> newCategoryBooks = categories.get(info[7]).getBooks();
                 newCategoryBooks.add(book);
@@ -273,7 +268,7 @@ public class LibraryManagement {
                 categories.get(category).setBooks(categoryBooks);
             }
 
-            library.books.remove(info[0]);
+            libraries.get(info[1]).books.remove(info[0]);
             System.out.println("success");
         }
     }
@@ -296,10 +291,7 @@ public class LibraryManagement {
             categoryThesis.add(thesis);
             categories.get(info[5]).setThesis(categoryThesis);
 
-            library.thesis.put(info[0], thesis);
-            if (!theses.containsKey(info[0])) {
-                theses.put(info[0], thesis);
-            }
+            libraries.get(info[6]).thesis.put(info[0], thesis);
             return true;
         }
     }
@@ -331,7 +323,7 @@ public class LibraryManagement {
                 Thesis thesis = library.thesis.get(info[0]);
                 String oldCategory = library.thesis.get(info[0]).getCategory().getId();
                 Category category = categories.get(info[6]);
-                library.thesis.get(info[0]).setCategory(category);
+                libraries.get(info[1]).thesis.get(info[0]).setCategory(category);
 
                 HashSet<Thesis> newCategoryThesis = categories.get(info[6]).getThesis();
                 newCategoryThesis.add(thesis);
@@ -369,7 +361,7 @@ public class LibraryManagement {
                 categories.get(category).setThesis(categoryThesis);
             }
 
-            library.thesis.remove(info[0]);
+            libraries.get(info[1]).thesis.remove(info[0]);
             System.out.println("success");
         }
     }
@@ -710,7 +702,8 @@ public class LibraryManagement {
 
             if (borrow.getWritingID().equals(info[3]) &&
                     borrow.getLibraryID().equals(info[2]) &&
-                    borrow.getPersonId().equals(info[0])) {
+                    borrow.getPersonId().equals(info[0]) &&
+                    borrow.getDate().equals(dateToRemove)) {
                 it.remove();
                 break;
             }
@@ -803,22 +796,6 @@ public class LibraryManagement {
             });
         });
 
-        /*books.forEach((key, value) -> {
-            if (value.getName().equals(keyWord) ||
-                value.getAuthor().equals(keyWord) ||
-                value.getPublisher().equals(keyWord)){
-                foundSources.add(key);
-            }
-        });
-
-        theses.forEach((key, value) -> {
-            if (value.getName().equals(keyWord) ||
-                value.getStudentName().equals(keyWord) ||
-                value.getProfessorName().equals(keyWord)){
-                foundSources.add(key);
-            }
-        });*/
-
         if (foundSources.isEmpty()) {
             System.out.println("not-found");
             return;
@@ -902,12 +879,30 @@ public class LibraryManagement {
         }
 
         int bookCount = 0;
-        int thesisCount = categories.get(info[0]).getThesis().size();
+        int thesisCount = 0;
 
-        HashSet<Book> categoryBooks = categories.get(info[0]).getBooks();
+        for (String libraryID : libraries.keySet()){
+            Library library = libraries.get(libraryID);
 
-        for (Book book : categoryBooks) {
-            bookCount += book.getCopyCount();
+            HashMap<String, Book> libraryBooks = library.getBooks();
+            HashMap<String, Thesis> libraryThesis = library.getThesis();
+
+            for (String bookID : libraryBooks.keySet()){
+                Book book = libraryBooks.get(bookID);
+
+                if (book.getCategory().getId().equals(info[0])){
+                    bookCount += book.getCopyCount();
+                }
+            }
+
+            for (String thesisID : libraryThesis.keySet()){
+                Thesis thesis = libraryThesis.get(thesisID);
+
+                if (thesis.getCategory().getId().equals(info[0])){
+                    thesisCount++;
+                }
+            }
+
         }
 
         System.out.println(bookCount + " " + thesisCount);
