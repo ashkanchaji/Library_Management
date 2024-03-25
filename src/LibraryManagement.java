@@ -3,6 +3,16 @@ import java.time.Duration;
 import java.time.LocalTime;
 import java.util.*;
 
+/**
+ * The LibraryManagement class gets a one line command from the user to add
+ * a library, category, book, thesis, student or staff and even edit or
+ * remove some of them. They can also borrow and return sources and search or
+ * get a report from the library or even reserve a seat in the library.
+ *
+ * @author Ashkan Chaji
+ * @version 1.0 (25.Mar.2024)
+ */
+
 public class LibraryManagement {
 
     private static HashMap<String, Library> libraries = new HashMap<>();
@@ -11,6 +21,13 @@ public class LibraryManagement {
     private static HashMap<String, Staff> staff = new HashMap<>();
     private static HashSet<Borrow> borrows = new HashSet<>();
     private static HashSet<ReserveSeat> reserveSeats = new HashSet<>();
+
+    /**
+     * The Main class where the program starts from gets a one line command in a
+     * while true loop until the user inputs "finish" and processes the input commands.
+     *
+     * @param args -
+     */
 
     public static void main(String[] args) {
         // add the null category as default
@@ -33,6 +50,14 @@ public class LibraryManagement {
             processInput(input);
         }
     }
+
+    /**
+     * Gets a String which contains the command and the info and calls the appropriate
+     * method based on the command.
+     *
+     * @param input A String that contain the command and the info needed to be used,
+     *             splitted with "#" and "|".
+     */
 
     private static void processInput(String input) {
         String[] commands = input.split("#");
@@ -111,6 +136,15 @@ public class LibraryManagement {
         }
     }
 
+    /**
+     * Gets the info about the library and if the ID is not a duplicate, creates
+     * a library object and adds it to the libraries hashMap. If the ID is a duplicate
+     * it will print "duplicate-id", else ir would print "success".
+     *
+     * @param info A String array which each index is associated to an info like this:
+     *             0: id, 1: name, 2: establishYear, 3: tableCount, 4: address
+     */
+
     private static void addLibrary(String[] info) {
         // 0: id, 1: name, 2: establishYear, 3: tableCount, 4: address
 
@@ -125,6 +159,15 @@ public class LibraryManagement {
         System.out.println("success");
     }
 
+    /**
+     * Gets the info about the category and if the ID is not a duplicate, creates
+     * a category object and adds it to the categories hashMap. If the ID is a duplicate
+     * it will print "duplicate-id", else ir would print "success".
+     *
+     * @param info A String array which each index is associated to an info like this:
+     *             0: id, 1: name
+     */
+
     private static void addCategory(String[] info) {
         // 0: id, 1: name
 
@@ -138,6 +181,18 @@ public class LibraryManagement {
 
         System.out.println("success");
     }
+
+    /**
+     * Gets the info about the book and if the category and library IDs were valid,
+     * and the ID of the book wasn't a duplicate, then it creates a book object and
+     * adds it to the appropriate collections. If it one of the IDs is not valid then
+     * it would print "not-found", else if the book ID is duplicate it prints "duplicate-id",
+     * else it prints "success".
+     *
+     * @param info A String array which each index is associated to an info like this:
+     *             0: id, 1: name, 2: author, 3: publisher, 4: printYear, 5: copyCount,
+     *             6: category, 7: library
+     */
 
     private static void addBook(String[] info) {
         // 0: id, 1: name, 2: author, 3: publisher, 4: printYear, 5: copyCount,
@@ -168,6 +223,17 @@ public class LibraryManagement {
 
             System.out.println("success");
     }
+
+    /**
+     * Gets the info about the book to be edited and if all the IDs that are given
+     * are correct, it will change the appropriate fields in the book. If a field is
+     * "-" then nothing will be changed about that field. If one of the IDs is not found
+     * will print "not-found", else it would print "success".
+     *
+     * @param info A String array which each index is associated to an info like this:
+     *             0: bookID, 1: libraryID, 2: name, 3: author, 4: publisher, 5: printYear,
+     *             6: copyCount, 7: category
+     */
 
     private static void editBook(String[] info) {
         // 0: bookID, 1: libraryID, 2: name, 3: author, 4: publisher, 5: printYear,
@@ -214,6 +280,17 @@ public class LibraryManagement {
         }
     }
 
+    /**
+     * Gets the ID of the book and the library that the book is in and if the IDs are
+     * valid and the book is not borrowed it will remove the book ID and object from the
+     * appropriate collections. If one of the IDs is not valid will print "not-found", else
+     * if the book is borrowed by someone then it prints "not-allowed", else would print
+     * "success".
+     *
+     * @param info A String array which each index is associated to an info like this:
+     *             0: bookID, 1: libraryID
+     */
+
     private static void removeBook(String[] info) {
         // 0: bookID, 1: libraryID
 
@@ -242,6 +319,18 @@ public class LibraryManagement {
             System.out.println("success");
         }
     }
+
+    /**
+     * Gets the info about the thesis and if the category and library IDs were valid,
+     * and the ID of the thesis wasn't a duplicate, then it creates a thesis object and
+     * adds it to the appropriate collections. If it one of the IDs is not valid then
+     * it would print "not-found", else if the book ID is duplicate it prints "duplicate-id",
+     * else it prints "success".
+     *
+     * @param info A String array which each index is associated to an info like this:
+     *             0: thesisID, 1: name, 2: studentName, 3: professorName, 4: defenceYear
+     *             5: category, 6: library
+     */
 
     private static void addThesis(String[] info) {
         // 0: thesisID, 1: name, 2: studentName, 3: professorName, 4: defenceYear
@@ -272,6 +361,17 @@ public class LibraryManagement {
 
         System.out.println("success");
     }
+
+    /**
+     * Gets the info about the thesis to be edited and if all the IDs that are given
+     * are correct, it will change the appropriate fields in the thesis. If a field is
+     * "-" then nothing will be changed about that field. If one of the IDs is not found
+     * will print "not-found", else it would print "success".
+     *
+     * @param info A String array which each index is associated to an info like this:
+     *             0: thesisID, 1: libraryID, 2: name, 3: studentName, 4: professorName,
+     *             5: defenceYear, 6: category
+     */
 
     private static void editThesis(String[] info) {
         // 0: thesisID, 1: libraryID, 2: name, 3: studentName, 4: professorName,
@@ -314,6 +414,17 @@ public class LibraryManagement {
         }
     }
 
+    /**
+     * Gets the ID of the thesis and the library that the thesis is in and if the IDs are
+     * valid and the thesis is not borrowed it will remove the thesis ID and object from the
+     * appropriate collections. If one of the IDs is not valid will print "not-found", else
+     * if the thesis is borrowed by someone then it prints "not-allowed", else would print
+     * "success".
+     *
+     * @param info A String array which each index is associated to an info like this:
+     *             0: thesisId, 1: libraryId
+     */
+
     private static void removeThesis(String[] info) {
         // 0: thesisId, 1: libraryId
 
@@ -343,6 +454,15 @@ public class LibraryManagement {
         }
     }
 
+    /**
+     * Gets the info about the student and if the ID is a duplicate it prints "duplicate-id",
+     * else it creates a student object and adds it to the students hashMap and print "success".
+     *
+     * @param info A String array which each index is associated to an info like this:
+     *             0: id, 1: password, 2: firstName, 3: lastName, 4: nationalID,
+     *             5: birthYear, 6: address
+     */
+
     private static void addStudent(String[] info) {
         // 0: id, 1: password, 2: firstName, 3: lastName, 4: nationalID,
         // 5: birthYear, 6: address
@@ -357,6 +477,17 @@ public class LibraryManagement {
 
         System.out.println("success");
     }
+
+    /**
+     * Gets info about the student to change and if the ID is not valid then it
+     * prints "not-found" else changes the appropriate fields that are not "-" and
+     * then prints "success".
+     *
+     * @param info A String array which each index is associated to an info like this:
+     *             0: id, 1: password, 2: firstName, 3: lastName, 4: nationalID,
+     *             5: birthYear, 6: address
+     *
+     */
 
     private static void editStudent(String[] info) {
         // 0: id, 1: password, 2: firstName, 3: lastName, 4: nationalID,
@@ -380,6 +511,16 @@ public class LibraryManagement {
         }
     }
 
+    /**
+     * Gets the student ID and if it's not valid then prints "not-found", else if
+     * the student is penalized for returning a source late it won't remove the
+     * student and prints "not-allowed", else removes the student from the appropriate
+     * collections and prints "success".
+     *
+     * @param info A String array which each index is associated to an info like this:
+     *             0: id
+     */
+
     private static void removeStudent(String[] info) {
         // 0: id
 
@@ -393,6 +534,15 @@ public class LibraryManagement {
             System.out.println("success");
         }
     }
+
+    /**
+     * Gets the info about the staff and if the ID is a duplicate it prints "duplicate-id",
+     * else it creates a staff object and adds it to the staff hashMap and print "success".
+     *
+     * @param info A String array which each index is associated to an info like this:
+     *             0: id, 1: password, 2: firstName, 3: lastName, 4: nationalID,
+     *             5: birthYear, 6: address
+     */
 
     private static void addStaff(String[] info) {
         // 0: id, 1: password, 2: firstName, 3: lastName, 4: nationalID,
@@ -408,6 +558,17 @@ public class LibraryManagement {
 
         System.out.println("success");
     }
+
+    /**
+     * Gets info about the staff to change and if the ID is not valid then it
+     * prints "not-found" else changes the appropriate fields that are not "-" and
+     * then prints "success".
+     *
+     * @param info A String array which each index is associated to an info like this:
+     *             0: id, 1: password, 2: firstName, 3: lastName, 4: nationalID,
+     *             5: birthYear, 6: address
+     *
+     */
 
     private static void editStaff(String[] info) {
         // 0: id, 1: password, 2: firstName, 3: lastName, 4: nationalID,
@@ -431,6 +592,16 @@ public class LibraryManagement {
         }
     }
 
+    /**
+     * Gets the staff ID and if it's not valid then prints "not-found", else if
+     * the staff is penalized for returning a source late it won't remove the
+     * staff and prints "not-allowed", else removes the staff from the appropriate
+     * collections and prints "success".
+     *
+     * @param info A String array which each index is associated to an info like this:
+     *             0: id
+     */
+
     private static void removeStaff(String[] info) {
         // 0: id
 
@@ -444,6 +615,21 @@ public class LibraryManagement {
             System.out.println("success");
         }
     }
+
+    /**
+     * Gets info about a source in specific library and the info about the person who
+     * wants to borrow it. If one of the IDs is not valid then will print "not-found",
+     * and if the password in wrong will print "invalid-pass". If the user has already
+     * borrowed the maximum amount of sources that they could borrow or there is no more
+     * copy of that source left, it will print "not-allowed". Else it will get the time
+     * and date from the user and creates a Borrow object for the source with the info
+     * and then adds it to the appropriate collections and prints "success".
+     *
+     * @param info A String array which each index is associated to an info like this:
+     *             0: personId, 1: password, 2: libraryID, 3: book/thesis ID
+     *             4: date, 5: time
+     *
+     */
 
     private static void borrow(String[] info) {
         // 0: personId, 1: password, 2: libraryID, 3: book/thesis ID
@@ -546,6 +732,21 @@ public class LibraryManagement {
         System.out.println("success");
     }
 
+    /**
+     * Gets the info about the book that is to be returned and the time and date and
+     * the person's info. If one of the IDs is wrong or the user has not borrowed the
+     * source it will print "not-found". If the password is wrong it will print "invalid-pass".
+     * Else it will delete that sources borrow object from appropriate collections and if the
+     * user it to be penalized for returning the source late, it would calculate the penalty
+     * amount and display it, else it prints "success".
+     * If the user has borrowed several of the same book it will return the one that would
+     * penalize the user the least or not at all.
+     *
+     * @param info A String array which each index is associated to an info like this:
+     *             0: personId, 1: password, 2: libraryID, 3: book/thesis ID
+     *             4: date, 5: time
+     */
+
     private static void returnSource (String[] info){
         // 0: personId, 1: password, 2: libraryID, 3: book/thesis ID
         // 4: date, 5: time
@@ -611,7 +812,7 @@ public class LibraryManagement {
         Borrow borrowToRemove;
         long leastPenaltyTime = Long.MAX_VALUE;
         long oldestBorrowTime = 0L;
-        Long toRemoveKey = -1L;
+        long toRemoveKey = -1L;
 
 
         for (Long hoursDifference : borrowedSources.keySet()){
@@ -713,6 +914,18 @@ public class LibraryManagement {
         System.out.println("success");
     }
 
+    /**
+     * This method calculates the duration that the source was borrowed after the user
+     * returns it, in hours. And is used in returnSource method and is not called directly
+     * using commands from the user.
+     *
+     * @param borrow The borrow object of the source to be returned to get the borrowing
+     *               date and time from it
+     * @param returningDate The date that the source is returned
+     * @param returningTime the time that the source is returned
+     * @return long (primitive) The duration that the source was borrowed in hours
+     */
+
     private static long borrowDuration(Borrow borrow, String returningDate, String returningTime) {
         String[] borrowDateInfo = borrow.getDate().split("-");
         String[] borrowTimeInfo = borrow.getTime().split(":");
@@ -735,6 +948,18 @@ public class LibraryManagement {
         return duration.toHours();
     }
 
+    /**
+     * Calculates the amount that the user is to be penalized based on the type
+     * of the source and who that user is. This method is used in returnSource
+     * method and is not called directly using commands from the user.
+     *
+     * @param personType Is used to check who the user is to penalize them based on the user type
+     * @param sourceType Is used to check what kind of source it is to penalize based on the source type
+     * @param hoursDifference Is used to calculate how mush should the user be penalized based on how much
+     *                        they were late.
+     * @return long (primitive) The amount that the user is to be penalized
+     */
+
     private static long calculatePenalty(String personType, String sourceType, long hoursDifference) {
         long penaltyPerHour;
         long maxPenaltyTime;
@@ -753,6 +978,17 @@ public class LibraryManagement {
             return 0;
         }
     }
+
+    /**
+     * Gets a keyword and searches through all the sources' name or author name,
+     * publisher name (for books) or student name and professor name (for thesis)
+     * that contain that key word and displays the IDs of those sources, sorted
+     * alphabetically and seperated by a '|'. If no sources found then it prints
+     * "not-found".
+     *
+     * @param info A String array which each index is associated to an info like this:
+     *             0: keyWord to search
+     */
 
     private static void search(String[] info) {
         // 0: keyWord to search
@@ -799,6 +1035,18 @@ public class LibraryManagement {
 
         System.out.println();
     }
+
+    /**
+     * This method gets a key word and the user's ID and password and if they
+     * were valid then it searches through all the other user's first and last
+     * names and displays an alphabetically sorted list of all users that their
+     * first or last name contains that key word seperated by '|'. If no user
+     * is found or the ID is wrong it prints "not-found" and if the password is
+     * wrong then it prints "invalid-pass".
+     *
+     * @param info  A String array which each index is associated to an info like this:
+     *              0: id, 1: passWord, 2: keyWord to search
+     */
 
     private static void searchUser(String[] info) {
         // 0: id, 1: passWord, 2: keyWord to search
@@ -856,6 +1104,15 @@ public class LibraryManagement {
         System.out.println();
     }
 
+    /**
+     * This method displays the number of books (including all the copies of one book)
+     * and thesis that are in the wanted category. If the ID is not valid it displays
+     * "not-found", else the number of book and the number of thesis seperated by space.
+     *
+     * @param info A String array which each index is associated to an info like this:
+     *             0: category id
+     */
+
     private static void categoryReport(String[] info) {
         // 0: category id
 
@@ -894,6 +1151,16 @@ public class LibraryManagement {
         System.out.println(bookCount + " " + thesisCount);
     }
 
+    /**
+     * This method displays the total numbers of books (including same copies),
+     * total number of thesis, the number of borrowed books and the number of
+     * borrowed thesis in a library separated by a space. If the ID is not valid
+     * it will print "not-found".
+     *
+     * @param info A String array which each index is associated to an info like this:
+     *             0: libraryID
+     */
+
     private static void libraryReport(String[] info) {
         // 0: libraryID
 
@@ -928,6 +1195,17 @@ public class LibraryManagement {
         System.out.printf("%d %d %d %d\n", totalBooks[0], totalThesis,
                 borrowedBooks[0], borrowedThesis[0]);
     }
+
+    /**
+     * This method gets a library ID and a date and time and will report
+     * an alphabetically sorted list of source IDs seperated by '|' from
+     * the given library that their return deadline has passed. If the ID
+     * is not valid it will print "not-found", and if no source has passed
+     * its deadline, it displays "none".
+     *
+     * @param info A String array which each index is associated to an info like this:
+     *             0: libraryID, 1: date, 2: time
+     */
 
     private static void reportPassedDeadline(String[] info) {
         // 0: libraryID, 1: date, 2: time
@@ -969,6 +1247,11 @@ public class LibraryManagement {
         System.out.println();
     }
 
+    /**
+     * This method displays the total sum of all the penalties given to
+     * users after they had returned their sources.
+     */
+
     private static void reportPenaltiesSum() {
         // no info input
 
@@ -985,6 +1268,20 @@ public class LibraryManagement {
 
         System.out.println(finalTotalPenalties);
     }
+
+    /**
+     * This method gets a users ID and password and the library ID and a date and
+     * time and reserves a seat for them at the given time in the library. If one
+     * of the IDs is not valid it prints "not-found", if the password is wrong it
+     * displays "invalid-pass". If the duration of the reserve is more than 8
+     * hours or the user has a reserve in that day it will print "not-allowed" and
+     * if no more seats are available at that time in the library it prints
+     * "not-available". Else it will create a ReserveSeat object for the user and adds
+     * it to appropriate collections.
+     *
+     * @param info A String array which each index is associated to an info like this:
+     *             0: ID, 1: password, 2: libraryID, 3: date, 4: timeStart, 5: timeEnd
+     */
 
     private static void reserveSeat(String[] info) {
         // 0: ID, 1: password, 2: libraryID, 3: date, 4: timeStart, 5: timeEnd
@@ -1097,6 +1394,16 @@ public class LibraryManagement {
 
         System.out.println("success");
     }
+
+    /**
+     * This method checks if two period of times interfere with each other or not.
+     *
+     * @param startTime1 start time of the first period
+     * @param endTime1 end time of the first period
+     * @param startTime2 start time of the second period
+     * @param endTime2 end time of teh second period
+     * @return boolean (primitive) returns true if the two periods interfere else false
+     */
 
     private static boolean checkTimeInterfere(String startTime1, String endTime1,
                                               String startTime2, String endTime2) {

@@ -1,3 +1,13 @@
+/**
+ * The Book class contains all the information about the book such as its ID, name
+ * author, publisher, printYear, number of copies, number of copies that are available,
+ * the category and the library that it's and a field to check if at least one of the
+ * copies of this book is borrowed. With all the necessary getter and setters.
+ *
+ * @author Ashkan Chaji
+ * @version 1.0 (25.Mar.2024)
+ */
+
 public class Book {
     private String id;
     private String name;
@@ -9,6 +19,19 @@ public class Book {
     private Category category;
     private Library library;
     private boolean borrowed;
+
+    /**
+     * A constructor that initializes all the fields.
+     *
+     * @param id Book ID
+     * @param name Book name (converted to lower case for search)
+     * @param author Book's author (converted to lower case for search)
+     * @param publisher Book's publisher (converted to lower case for search)
+     * @param printYear Book's print year
+     * @param copyCount number of copies (copyCountNow is the same at first)
+     * @param category Book's category
+     * @param library Book's library
+     */
 
     public Book(String id, String name, String author, String publisher,
                 String printYear, String copyCount, Category category,
@@ -67,6 +90,13 @@ public class Book {
     public Integer getCopyCount() {
         return copyCount;
     }
+
+    /**
+     * sets the new number of total copies of the books and adds the differance of
+     * the new and the old copy counts to copyCountNow.
+     *
+     * @param copyCount new number of copy counts
+     */
 
     public void setCopyCount(String copyCount) {
         int diff = Integer.parseInt(copyCount) - this.copyCount;

@@ -1,6 +1,16 @@
 import java.util.ArrayList;
 import java.util.HashSet;
 
+/**
+ * The Student class keeps the student ID (as final), password, first name,
+ * last name, national ID, birth year, address, a HashSet of their reserved
+ * seats, their total amount of penalty and an array list of all the sources
+ * they have borrowed. With all the necessary getter and setters.
+ *
+ * @author Ashkan Chaji
+ * @version 1.0 (25.Mar.2024)
+ */
+
 public class Student {
     private final String id;
     private String password;
@@ -12,6 +22,14 @@ public class Student {
     private HashSet<ReserveSeat> reserveSeats;
     private long penalty;
     private ArrayList<Borrow> borrowedBooks;
+
+    /**
+     * A constructor that initializes all the fields.
+     *
+     * @param info A String array which each index is associated to an info like this:
+     *             0: id, 1: password, 2: firstName, 3: lastName, 4: nationalID,
+     *             5: birthYear, 6: address
+     */
 
     public Student(String[] info) {
         // 0: id, 1: password, 2: firstName, 3: lastName, 4: nationalID,
